@@ -7,7 +7,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class Conduit {
     
-    public static Set<ConduitType> TYPES = Set.of(new ConduitType("power", new Vec3(8D/16D, 8D/16D, 8D/16D)));
+    public static Set<ConduitType> TYPES = Set.of(new ConduitType("power", new Vec3(8D, 8D, 8D)), new ConduitType("items", new Vec3(8D, 12D, 8D)));
     private ConduitType type;
     private ResourceLocation texture;
     

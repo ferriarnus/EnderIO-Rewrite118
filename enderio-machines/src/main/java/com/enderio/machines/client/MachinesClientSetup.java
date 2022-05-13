@@ -1,6 +1,5 @@
 package com.enderio.machines.client;
 
-import java.util.List;
 import java.util.Optional;
 
 import com.enderio.machines.EIOMachines;
@@ -8,6 +7,8 @@ import com.enderio.machines.client.rendering.blockentity.FluidTankBER;
 import com.enderio.machines.client.rendering.model.ConduitBakedModel;
 import com.enderio.machines.client.rendering.model.IOOverlayBakedModel;
 import com.enderio.machines.common.block.ConduitBundleBlock;
+import com.enderio.machines.common.blockentity.ConduitBundleBlockEntity;
+import com.enderio.machines.common.conduits.Conduit;
 import com.enderio.machines.common.init.MachineBlockEntities;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -49,17 +50,17 @@ public class MachinesClientSetup {
         @SubscribeEvent
         public static void higlightConduit(DrawSelectionEvent.HighlightBlock event) {
             BlockPos blockPos = event.getTarget().getBlockPos();
-            if (Minecraft.getInstance().level.getBlockState(blockPos).getBlock() instanceof ConduitBundleBlock) { //get the block
+            if (Minecraft.getInstance().level.getBlockEntity(blockPos) instanceof ConduitBundleBlockEntity conduitBE) { //get the block
                 event.setCanceled(true);
                 Vec3 location = event.getTarget().getLocation();
-                List<VoxelShape> shapes = List.of(ConduitBundleBlock.SHAPE, ConduitBundleBlock.SHAPE2); //get list dynamically (from BE)
                 event.getTarget().getBlockPos();
-                for (VoxelShape shape : shapes) {
+                for (Conduit conduit : conduitBE.getConduits()) {
+                    System.out.println(conduit.getType().name());
                     Vec3 camPos = event.getCamera().getPosition();
                     Vec3 subtract = location.subtract(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-                    Optional<Vec3> closestPointTo = shape.closestPointTo(subtract);
+                    Optional<Vec3> closestPointTo = ConduitBundleBlock.getShape(conduit.getType().pos()).closestPointTo(subtract);
                     if (closestPointTo.isPresent() && closestPointTo.get().subtract(subtract).closerThan(new PositionImpl(0, 0, 0), 0.001)) { //point really close to block (can't be zero due to precision, but can be better)
-                        renderHitOutline(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), camPos.x, camPos.y, camPos.z, blockPos, shape);
+                        renderHitOutline(event.getPoseStack(), event.getMultiBufferSource().getBuffer(RenderType.lines()), camPos.x, camPos.y, camPos.z, blockPos, ConduitBundleBlock.getShape(conduit.getType().pos()));
                     }
                 }
             }

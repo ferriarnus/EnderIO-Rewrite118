@@ -1,7 +1,6 @@
 package com.enderio.machines.common.block;
 
 import com.enderio.machines.common.blockentity.ConduitBundleBlockEntity;
-import com.enderio.machines.common.conduits.Conduit;
 import com.enderio.machines.common.init.MachineBlockEntities;
 
 import net.minecraft.core.BlockPos;
@@ -18,23 +17,17 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class ConduitBundleBlock extends Block implements EntityBlock{
     
-    public static final VoxelShape SHAPE = Block.box(6.0D, 6.0D, 6.0D, 10.0D, 10.0D, 10.0D);
-    public static final VoxelShape SHAPE2 = Block.box(6.0D, 10.0D, 6.0D, 10.0D, 14.0D, 10.0D);
-
     public ConduitBundleBlock(Properties p_49795_) {
         super(p_49795_);
     }
     
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        VoxelShape shape = SHAPE;
+        VoxelShape shape = Shapes.empty();
         if (level.getBlockEntity(pos) instanceof ConduitBundleBlockEntity conduitBE) {
-            shape = Shapes.empty();
-            for (Conduit.ConduitType conduit:conduitBE.getTypes()) {
-                Shapes.or(shape, getShape(conduit.pos()));
-            }
+           shape = conduitBE.getShape();
         }
-        return shape.optimize();
+        return shape;
     }
     
     public static VoxelShape getShape(Vec3 pos) {
@@ -45,12 +38,6 @@ public class ConduitBundleBlock extends Block implements EntityBlock{
     public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
         // TODO Auto-generated method stub
         super.onRemove(state, level, pos, newState, isMoving);
-    }
-    
-    @Override
-    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean isMoving) {
-        // TODO Auto-generated method stub
-        super.onPlace(state, level, pos, oldState, isMoving);
     }
     
 

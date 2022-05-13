@@ -75,15 +75,19 @@ public class ConduitBakedModel implements IDynamicBakedModel{
     
     private void generateQuadCache() {
         //TODO Collect all conduits and generate cache
-        Set<Set<ConduitType>> combinations = Sets.combinations(Conduit.TYPES, Conduit.TYPES.size());
-        for (Set<ConduitType> combination: combinations) {
-            List<String> types = new ArrayList<>();
-            for (Conduit.ConduitType type: combination) {
-                types.add(type.name());
+        for (int i = 0; i< Conduit.TYPES.size(); i++) {
+            Set<Set<ConduitType>> combinations = Sets.combinations(Conduit.TYPES, i);
+            for (Set<ConduitType> combination: combinations) {
+                List<String> types = new ArrayList<>();
+                for (Conduit.ConduitType type: combination) {
+                    types.add(type.name());
+                }
+                types.add("power");
+                types.add("item");
+                List<String> connected = new ArrayList<>();
+                connected.add("power");
+                quadCache.put(new ModelKey(types, connected, modelState), generateQuadsBundle(types, connected));
             }
-            List<String> connected = new ArrayList<>();
-            connected.add("power");
-            quadCache.put(new ModelKey(types, connected, modelState), generateQuadsBundle(types, connected));
         }
 
     }
