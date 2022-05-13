@@ -4,6 +4,7 @@ import com.enderio.base.EnderIO;
 import com.enderio.base.common.item.EIOCreativeTabs;
 import com.enderio.base.datagen.model.EIOModel;
 import com.enderio.machines.EIOMachines;
+import com.enderio.machines.common.block.ConduitBundleBlock;
 import com.enderio.machines.common.block.EnhancedMachineBlock;
 import com.enderio.machines.common.block.MachineBlock;
 import com.enderio.machines.common.block.ProgressMachineBlock;
@@ -14,6 +15,7 @@ import com.enderio.machines.datagen.model.block.MachinesBlockState;
 import com.mojang.math.Vector3f;
 import com.tterrag.registrate.Registrate;
 import com.tterrag.registrate.util.entry.BlockEntry;
+
 import net.minecraft.client.renderer.RenderType;
 
 public class MachineBlocks {
@@ -175,6 +177,12 @@ public class MachineBlocks {
             .component(EIOMachines.loc("block/enhanced_alloy_smelter_top"), new Vector3f(0.0f, 1.0f, 0.0f))))
         .build()
         .register();
+    
+    public static final BlockEntry<ConduitBundleBlock> CONDUIT = REGISTRATE
+            .block("conduit", props -> new ConduitBundleBlock(props))
+            .properties(props -> props.noOcclusion())
+            .simpleItem()
+            .register();
 
     public static void classload() {}
 }

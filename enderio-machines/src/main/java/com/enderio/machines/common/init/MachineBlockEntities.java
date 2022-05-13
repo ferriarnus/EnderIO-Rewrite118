@@ -2,6 +2,7 @@ package com.enderio.machines.common.init;
 
 import com.enderio.machines.EIOMachines;
 import com.enderio.machines.common.blockentity.AlloySmelterBlockEntity;
+import com.enderio.machines.common.blockentity.ConduitBundleBlockEntity;
 import com.enderio.machines.common.blockentity.EnchanterBlockEntity;
 import com.enderio.machines.common.blockentity.FluidTankBlockEntity;
 import com.tterrag.registrate.Registrate;
@@ -44,6 +45,11 @@ public class MachineBlockEntities {
         .blockEntity("enhanced_alloy_smelter", AlloySmelterBlockEntity.Enhanced::new)
         .validBlocks(MachineBlocks.ENHANCED_ALLOY_SMELTER)
         .register();
+    
+    public static final BlockEntityEntry<ConduitBundleBlockEntity> CONDUIT = REGISTRATE
+            .blockEntity("conduit", ConduitBundleBlockEntity::new)
+            .validBlocks(MachineBlocks.CONDUIT)
+            .register();
 
     public static void classload() {}
 }
