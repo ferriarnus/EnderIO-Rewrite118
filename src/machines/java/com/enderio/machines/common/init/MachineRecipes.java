@@ -3,6 +3,8 @@ package com.enderio.machines.common.init;
 import com.enderio.EnderIO;
 import com.enderio.core.common.recipes.RecipeTypeSerializerPair;
 import com.enderio.machines.common.recipe.*;
+import com.enderio.machines.common.recipe.vat.VatFluidConversionRecipe;
+import com.enderio.machines.common.recipe.vat.VatModifierRecipe;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -26,6 +28,9 @@ public class MachineRecipes {
     public static final RecipeTypeSerializerPair<SoulBindingRecipe, SoulBindingRecipe.Serializer> SOUL_BINDING = register("soul_binding", SoulBindingRecipe.Serializer::new);
     public static final RecipeTypeSerializerPair<TankRecipe, TankRecipe.Serializer> TANK = register("tank", TankRecipe.Serializer::new);
     public static final RecipeTypeSerializerPair<PaintingRecipe, PaintingRecipe.Serializer> PAINTING = register("painting", PaintingRecipe.Serializer::new);
+    public static final RecipeTypeSerializerPair<VatFluidConversionRecipe, VatFluidConversionRecipe.Serializer> VAT_FLUID = register("vat_fluid", VatFluidConversionRecipe.Serializer::new);
+    public static final RecipeTypeSerializerPair<VatModifierRecipe, VatModifierRecipe.Serializer> MODIFIER = register("vat_modifier", VatModifierRecipe.Serializer::new);
+
 
     private static <I extends Recipe<?>> RegistryObject<RecipeType<I>> registerType(String name) {
         return RECIPE_TYPES.register(name, () -> RecipeType.simple(EnderIO.loc(name)));
