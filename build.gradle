@@ -158,6 +158,7 @@ repositories { RepositoryHandler handler ->
     exclusiveRepo(handler, 'https://dogforce-games.com/maven', 'dev.gigaherz.graph')
     exclusiveRepo(handler, 'https://api.modrinth.com/maven', 'maven.modrinth')
     exclusiveRepo(handler, 'https://maven.parchmentmc.org/', 'org.parchmentmc.data')
+    exclusiveRepo(handler, 'https://squiddev.cc/maven/', 'cc.tweaked')
 
     mavenLocal()
 }
@@ -232,6 +233,12 @@ dependencies {
 
     // Mekanism
     //runtimeOnly "curse.maven:mekanism-268560:${mekanism_cf_id}"
+
+    //CC
+    compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-common-api:$cctVersion")
+    compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-core-api:$cctVersion")
+    compileOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge-api:$cctVersion")
+    runtimeOnly("cc.tweaked:cc-tweaked-$minecraft_version-forge:$cctVersion")
 
     // Jetbrains annotations
     compileOnly 'org.jetbrains:annotations:23.0.0'
