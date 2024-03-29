@@ -1,5 +1,6 @@
 package com.enderio.machines.common.attachment;
 
+import com.enderio.core.common.blockentity.EnderBlockEntity;
 import com.enderio.machines.common.MachineNBTKeys;
 import com.enderio.machines.common.blockentity.base.MachineBlockEntity;
 import com.enderio.machines.common.io.fluid.MachineFluidHandler;
@@ -23,7 +24,7 @@ public interface IFluidTankUser {
         getFluidHandler().deserializeNBT(pTag.getCompound(MachineNBTKeys.FLUIDS));
     }
 
-    ICapabilityProvider<MachineBlockEntity, Direction, IFluidHandler> FLUID_HANDLER_PROVIDER =
+    ICapabilityProvider<EnderBlockEntity, Direction, IFluidHandler> FLUID_HANDLER_PROVIDER =
         (be, side) ->{
             if (be instanceof IFluidTankUser user) {
                 return user.getFluidHandler().getForSide(side);

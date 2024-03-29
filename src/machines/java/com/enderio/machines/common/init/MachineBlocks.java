@@ -8,8 +8,10 @@ import com.enderio.base.data.loot.DecorLootTable;
 import com.enderio.base.data.model.block.EIOBlockState;
 import com.enderio.core.data.model.EIOModel;
 import com.enderio.machines.common.MachineNBTKeys;
+import com.enderio.machines.common.block.AgitatedCatalyst;
 import com.enderio.machines.common.block.CapacitorBankBlock;
 import com.enderio.machines.common.block.EnchanterBlock;
+import com.enderio.machines.common.block.EtherealBlossom;
 import com.enderio.machines.common.block.MachineBlock;
 import com.enderio.machines.common.block.PaintedTravelAnchorBlock;
 import com.enderio.machines.common.block.ProgressMachineBlock;
@@ -219,6 +221,18 @@ public class MachineBlocks {
         .setBlockStateProvider((prov, ctx) -> prov.simpleBlock(ctx.get(), prov.models().getExistingFile(EnderIO.loc("block/" + ctx.getName()))))
         .setTranslation("XP Obelisk")
         .createBlockItem(ITEM_REGISTRY, item -> item.setTab((EIOCreativeTabs.MACHINES)));
+
+    public static RegiliteBlock<AgitatedCatalyst> AGITATED_CATALYST = BLOCK_REGISTRY
+        .registerBlock("agitated_catalyst", AgitatedCatalyst::new, BlockBehaviour.Properties.of())
+        .setLootTable(MachinesLootTable::copyNBT)
+        .addBlockTags(BlockTags.NEEDS_STONE_TOOL, BlockTags.MINEABLE_WITH_PICKAXE)
+        .createBlockItem(ITEM_REGISTRY, item -> item.setTab((EIOCreativeTabs.MAIN)));
+
+    public static RegiliteBlock<EtherealBlossom> ETHEREAL_BLOSSOM = BLOCK_REGISTRY
+        .registerBlock("ehtereal_blossom", EtherealBlossom::new, BlockBehaviour.Properties.of())
+        //TODO loot table
+        .addBlockTags(BlockTags.MINEABLE_WITH_HOE)
+        .createBlockItem(ITEM_REGISTRY, item -> item.setTab((EIOCreativeTabs.MAIN)));
 
     //used when single methods needs to be overridden in the block class
     private static <T extends MachineBlock> RegiliteBlock<T> baseMachine(RegiliteBlock<T> machineBlock,

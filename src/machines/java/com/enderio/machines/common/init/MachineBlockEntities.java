@@ -157,6 +157,10 @@ public class MachineBlockEntities {
             .apply(MachineBlockEntities::machineBlockEntityCapabilities)
             .addCapability(Capabilities.FluidHandler.BLOCK, IFluidTankUser.FLUID_HANDLER_PROVIDER);
 
+    public static final RegiliteBlockEntity<AgitatedCatalystBlockEntity> AGITATED_CATALYST =
+        register("agitated_catalyst", AgitatedCatalystBlockEntity::new, MachineBlocks.AGITATED_CATALYST)
+            .addCapability(Capabilities.FluidHandler.BLOCK, IFluidTankUser.FLUID_HANDLER_PROVIDER);
+
     @SafeVarargs
     private static <B extends BlockEntity> RegiliteBlockEntity<B> register(String name, BlockEntityType.BlockEntitySupplier<B> beFactory,
         Supplier<? extends Block>... blocks) {
