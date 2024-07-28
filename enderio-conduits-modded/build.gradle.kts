@@ -57,6 +57,15 @@ dependencies {
     //Laserio
     compileOnly("curse.maven:laserio-${curseforge_laserio_id}:${curseforge_laserio_file}")
     runtimeOnly("curse.maven:laserio-${curseforge_laserio_id}:${curseforge_laserio_file}")
+
+    // Pneumaticcraft
+    compileOnly("me.desht.pneumaticcraft:pneumaticcraft-repressurized:8.0.0+mc1.21-SNAPSHOT") {
+        exclude(group = "top.theillusivec4.curios")
+    }
+    runtimeOnly("me.desht.pneumaticcraft:pneumaticcraft-repressurized:8.0.0+mc1.21-SNAPSHOT") {
+        exclude(group = "top.theillusivec4.curios")
+    }
+
 }
 
 neoForge {
