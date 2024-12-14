@@ -34,18 +34,21 @@ public class ReagentDataProvider implements DataProvider {
     }
 
     protected void gather() {
-        addReagent(Items.WHEAT, Tags.Items.CROPS, 3D);
-        addReagent(Items.WHEAT, Tags.Items.SEEDS, 2D);
+        addReagent(Items.SUGAR_CANE, Tags.Items.CROPS, 0.5D);
 
         addReagent(Items.GLOWSTONE_DUST, MachineTags.ItemTags.NATURAL_LIGHTS, 0.25D);
         addReagent(Items.SEA_PICKLE, MachineTags.ItemTags.NATURAL_LIGHTS, 0.25D);
-        addReagent(Items.GLOW_INK_SAC, MachineTags.ItemTags.NATURAL_LIGHTS, 0.20D);
+        addReagent(Items.GLOW_INK_SAC, MachineTags.ItemTags.NATURAL_LIGHTS, 0.5D);
         addReagent(Items.GLOW_LICHEN, MachineTags.ItemTags.NATURAL_LIGHTS, 0.20D);
         addReagent(Items.GLOW_BERRIES, MachineTags.ItemTags.NATURAL_LIGHTS, 0.15D);
 
-        addReagent(Items.FIRE_CHARGE, MachineTags.ItemTags.EXPLOSIVES, 0.2D);
-        addReagent(Items.FIREWORK_STAR, MachineTags.ItemTags.EXPLOSIVES, 0.2D);
-        addReagent(Items.FIREWORK_ROCKET, MachineTags.ItemTags.EXPLOSIVES, 0.1D);
+        addReagent(Items.FIRE_CHARGE, MachineTags.ItemTags.EXPLOSIVES, 0.5D);
+        addReagent(Items.FIREWORK_STAR, MachineTags.ItemTags.EXPLOSIVES, 0.4D);
+        addReagent(Items.FIREWORK_ROCKET, MachineTags.ItemTags.EXPLOSIVES, 0.4D);
+        addReagent(Items.GUNPOWDER, MachineTags.ItemTags.EXPLOSIVES, 0.25D);
+
+        addReagent(Items.SUNFLOWER, MachineTags.ItemTags.SUNFLOWER, 1D);
+        addReagent(Items.TORCHFLOWER, MachineTags.ItemTags.SUNFLOWER, 1.2D);
     }
 
     @Override
