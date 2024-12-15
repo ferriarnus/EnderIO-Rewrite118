@@ -4,6 +4,8 @@
     "minecraft:sea_pickle",
     "minecraft:glow_ink_sac",
     "minecraft:glow_lichen",
-    "minecraft:glow_berries"
+    "minecraft:glow_berries",
+    "minecraft:glowstone",
+    "minecraft:sea_lantern"
   ]
 }

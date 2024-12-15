@@ -21,7 +21,7 @@ import com.enderio.machines.common.menu.MachineSlot;
 import com.enderio.machines.common.menu.PreviewMachineSlot;
 import com.enderio.machines.common.tag.MachineTags;
 import com.enderio.machines.data.advancements.MachinesAdvancementGenerator;
-import com.enderio.machines.data.reagentdata.ReagentDataProvider;
+import com.enderio.machines.data.reagentdata.ReagentProvider;
 import com.enderio.machines.data.recipes.AlloyRecipeProvider;
 import com.enderio.machines.data.recipes.EnchanterRecipeProvider;
 import com.enderio.machines.data.recipes.FermentingRecipeProvider;
@@ -115,8 +115,8 @@ public class EnderIOMachines {
         provider.addSubProvider(event.includeServer(), new MachineEntityTypeTagsProvider(packOutput, lookupProvider, event.getExistingFileHelper()));
         var b = new MachineBlockTagsProvider(packOutput, lookupProvider, event.getExistingFileHelper());
         provider.addSubProvider(event.includeServer(), b);
+        provider.addSubProvider(event.includeServer(), new ReagentProvider(packOutput, lookupProvider)); // Reagent Data needs to be before ItemTags
         provider.addSubProvider(event.includeServer(), new MachineItemTagsProvider(packOutput, lookupProvider, b.contentsGetter(), event.getExistingFileHelper()));
-        provider.addSubProvider(event.includeServer(), new ReagentDataProvider(packOutput, lookupProvider, event.getExistingFileHelper()));
 
         generator.addProvider(true, provider);
         provider.addSubProvider(event.includeServer(), new AdvancementProvider(packOutput, event.getLookupProvider(), event.getExistingFileHelper(),

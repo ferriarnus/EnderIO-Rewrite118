@@ -30,9 +30,6 @@
     "minecraft:sugar_cane": {
       "#c:crops": 0.5
     },
-    "minecraft:sunflower": {
-      "#enderio:sunflower": 1.0
-    },
     "minecraft:torchflower": {
       "#enderio:sunflower": 1.2
     }

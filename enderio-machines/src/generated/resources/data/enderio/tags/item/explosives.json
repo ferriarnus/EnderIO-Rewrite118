@@ -1,8 +1,9 @@
 {
   "values": [
-    "minecraft:tnt",
+    "minecraft:fire_charge",
     "minecraft:firework_star",
     "minecraft:firework_rocket",
-    "minecraft:fire_charge"
+    "minecraft:gunpowder",
+    "minecraft:tnt"
   ]
 }
