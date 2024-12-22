@@ -26,6 +26,7 @@ public class SinglePaintedBlockEntity extends BlockEntity implements PaintedBloc
     protected Block paint;
 
     public static final ModelProperty<Block> PAINT = PaintedBlockEntity.createAndRegisterModelProperty();
+    public static final ModelProperty<ModelData> PAINT_DATA = new ModelProperty<>();
 
     public SinglePaintedBlockEntity(BlockPos pWorldPosition, BlockState pBlockState) {
         super(EIOBlockEntities.SINGLE_PAINTED.get(), pWorldPosition, pBlockState);
@@ -68,7 +69,8 @@ public class SinglePaintedBlockEntity extends BlockEntity implements PaintedBloc
         if (oldPaint != paint) {
             requestModelDataUpdate();
             if (level != null) {
-                level.setBlock(getBlockPos(), level.getBlockState(getBlockPos()), 9);
+                level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), Block.UPDATE_ALL);
+                //level.setBlock(getBlockPos(), level.getBlockState(getBlockPos()), 9);
             }
         }
     }

@@ -21,6 +21,8 @@ val jeiVersion: String by project
 val cctMinecraftVersion: String by project
 val cctVersion: String by project
 val athenaVersion: String by project
+val chippedVersion: String by project
+val resourcefullibVersion: String by project
 val ae2Version: String by project
 val refinedstorageVersion: String by project
 val jadeFileId: String by project
@@ -52,6 +54,10 @@ dependencies {
 
     //Athena ctm
     runtimeOnly("maven.modrinth:athena-ctm:${athenaVersion}")
+
+    //Chipped
+    runtimeOnly("maven.modrinth:chipped:${chippedVersion}")
+    runtimeOnly("maven.modrinth:resourceful-lib:${resourcefullibVersion}")
 
     // AE2
     runtimeOnly("appeng:appliedenergistics2:${ae2Version}")

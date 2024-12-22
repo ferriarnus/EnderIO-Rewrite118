@@ -39,7 +39,7 @@ subprojects {
         spotless {
 
             if (project.name != "endercore") {
-                ratchetFrom = "origin/dev/1.21.1"
+                //ratchetFrom = "origin/dev/1.21.1"
             }
 
             encoding("UTF-8")
