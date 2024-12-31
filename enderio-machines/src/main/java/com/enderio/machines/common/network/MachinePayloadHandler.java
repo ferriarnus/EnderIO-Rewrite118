@@ -1,10 +1,11 @@
 package com.enderio.machines.common.network;
 
-import com.enderio.machines.common.blockentity.VatBlockEntity;
-import com.enderio.machines.common.menu.CrafterMenu;
+import com.enderio.machines.common.blocks.base.blockentity.MachineBlockEntity;
+import com.enderio.machines.common.blocks.crafter.CrafterMenu;
 import com.enderio.machines.common.souldata.EngineSoul;
 import com.enderio.machines.common.souldata.SolarSoul;
 import com.enderio.machines.common.souldata.SpawnerSoul;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
 
 public class MachinePayloadHandler {
@@ -45,18 +46,13 @@ public class MachinePayloadHandler {
             });
         }
 
-        public void vatMoveTank(VatMoveTankPacket packet, IPayloadContext context) {
+        public void handleCycleIOConfigPacket(CycleIOConfigPacket packet, IPayloadContext context) {
             context.enqueueWork(() -> {
-                if (context.player().level().getBlockEntity(packet.pos()) instanceof VatBlockEntity vatBlockEntity) {
-                    vatBlockEntity.moveFluidToOutputTank();
-                }
-            });
-        }
+                var level = context.player().level();
+                BlockEntity be = level.getBlockEntity(packet.pos());
 
-        public void vatDumpTank(VatDumpTankPacket packet, IPayloadContext context) {
-            context.enqueueWork(() -> {
-                if (context.player().level().getBlockEntity(packet.pos()) instanceof VatBlockEntity vatBlockEntity) {
-                    vatBlockEntity.dumpOutputTank();
+                if (be instanceof MachineBlockEntity machineBlockEntity) {
+                    machineBlockEntity.cycleIOMode(packet.side());
                 }
             });
         }

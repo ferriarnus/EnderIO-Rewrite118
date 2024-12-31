@@ -1,6 +1,5 @@
 package com.enderio.conduits.common.conduit.type.fluid;
 
-import com.enderio.EnderIOBase;
 import com.enderio.base.api.filter.FluidStackFilter;
 import com.enderio.base.api.filter.ResourceFilter;
 import com.enderio.conduits.api.Conduit;
@@ -13,39 +12,39 @@ import com.enderio.conduits.common.components.ExtractionSpeedUpgrade;
 import com.enderio.conduits.common.init.ConduitLang;
 import com.enderio.conduits.common.init.ConduitTypes;
 import com.enderio.core.common.util.TooltipUtil;
+import com.mojang.logging.LogUtils;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.function.Consumer;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.material.Fluids;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
 
-import java.util.function.Consumer;
+public record FluidConduit(ResourceLocation texture, Component description, int transferRatePerTick,
+        boolean isMultiFluid) implements Conduit<FluidConduit> {
 
-public record FluidConduit(
-    ResourceLocation texture,
-    Component description,
-    int transferRate,
-    boolean isMultiFluid
-) implements Conduit<FluidConduit> {
+    private static final Logger LOGGER = LogUtils.getLogger();
 
-    public static final MapCodec<FluidConduit> CODEC = RecordCodecBuilder.mapCodec(
-        builder -> builder
-            .group(
-                ResourceLocation.CODEC.fieldOf("texture").forGetter(FluidConduit::texture),
-                ComponentSerialization.CODEC.fieldOf("description").forGetter(FluidConduit::description),
-                Codec.INT.fieldOf("transfer_rate").forGetter(FluidConduit::transferRate),
-                Codec.BOOL.fieldOf("is_multi_fluid").forGetter(FluidConduit::isMultiFluid)
-            ).apply(builder, FluidConduit::new)
-    );
+    public static final MapCodec<FluidConduit> CODEC = RecordCodecBuilder
+            .mapCodec(
+                    builder -> builder
+                            .group(ResourceLocation.CODEC.fieldOf("texture").forGetter(FluidConduit::texture),
+                                    ComponentSerialization.CODEC.fieldOf("description")
+                                            .forGetter(FluidConduit::description),
+                                    Codec.INT.fieldOf("transfer_rate").forGetter(FluidConduit::transferRatePerTick),
+                                    Codec.BOOL.fieldOf("is_multi_fluid").forGetter(FluidConduit::isMultiFluid))
+                            .apply(builder, FluidConduit::new));
 
-    public static final ConduitMenuData NORMAL_MENU_DATA = new ConduitMenuData.Simple(true, true, true, false, false, true);
-    public static final ConduitMenuData ADVANCED_MENU_DATA = new ConduitMenuData.Simple(true, true, true, true, true, true);
+    public static final ConduitMenuData NORMAL_MENU_DATA = new ConduitMenuData.Simple(true, true, true, false, false,
+            true);
+    public static final ConduitMenuData ADVANCED_MENU_DATA = new ConduitMenuData.Simple(true, true, true, true, true,
+            true);
     private static final FluidConduitTicker TICKER = new FluidConduitTicker();
 
     @Override
@@ -82,7 +81,8 @@ public record FluidConduit(
         FluidConduitData selfData = selfNode.getOrCreateData(ConduitTypes.Data.FLUID.get());
         FluidConduitData otherData = otherNode.getOrCreateData(ConduitTypes.Data.FLUID.get());
 
-        return selfData.lockedFluid().isSame(Fluids.EMPTY) || otherData.lockedFluid().isSame(Fluids.EMPTY) || selfData.lockedFluid() == otherData.lockedFluid();
+        return selfData.lockedFluid() == null || otherData.lockedFluid() == null
+                || selfData.lockedFluid() == otherData.lockedFluid();
     }
 
     @Override
@@ -90,13 +90,13 @@ public record FluidConduit(
         FluidConduitData selfData = selfNode.getOrCreateData(ConduitTypes.Data.FLUID.get());
         FluidConduitData otherData = otherNode.getOrCreateData(ConduitTypes.Data.FLUID.get());
 
-        if (!selfData.lockedFluid().isSame(Fluids.EMPTY)) {
-            if (!otherData.lockedFluid().isSame(Fluids.EMPTY) && selfData.lockedFluid() != otherData.lockedFluid()) {
-                EnderIOBase.LOGGER.warn("incompatible fluid conduits merged");
+        if (selfData.lockedFluid() != null) {
+            if (otherData.lockedFluid() != null && selfData.lockedFluid() != otherData.lockedFluid()) {
+                LOGGER.warn("incompatible fluid conduits merged");
             }
 
             otherData.setLockedFluid(selfData.lockedFluid());
-        } else if (!otherData.lockedFluid().isSame(Fluids.EMPTY)) {
+        } else if (otherData.lockedFluid() != null) {
             selfData.setLockedFluid(otherData.lockedFluid());
         }
     }
@@ -112,13 +112,31 @@ public record FluidConduit(
     }
 
     @Override
-    public void addToTooltip(Item.TooltipContext pContext, Consumer<Component> pTooltipAdder, TooltipFlag pTooltipFlag) {
-        String transferLimitFormatted = String.format("%,d", transferRate() * (20 / getTicker().getTickRate()));
-        pTooltipAdder.accept(TooltipUtil.styledWithArgs(ConduitLang.FLUID_RATE_TOOLTIP, transferLimitFormatted));
+    public void addToTooltip(Item.TooltipContext pContext, Consumer<Component> pTooltipAdder,
+            TooltipFlag pTooltipFlag) {
+        String transferLimitFormatted = String.format("%,d", transferRatePerTick());
+        pTooltipAdder
+                .accept(TooltipUtil.styledWithArgs(ConduitLang.FLUID_EFFECTIVE_RATE_TOOLTIP, transferLimitFormatted));
 
         if (isMultiFluid()) {
             pTooltipAdder.accept(ConduitLang.MULTI_FLUID_TOOLTIP);
         }
+
+        if (pTooltipFlag.hasShiftDown()) {
+            String rawRateFormatted = String.format("%,d",
+                    (int) Math.ceil(transferRatePerTick() * (20.0 / graphTickRate())));
+            pTooltipAdder.accept(TooltipUtil.styledWithArgs(ConduitLang.FLUID_RAW_RATE_TOOLTIP, rawRateFormatted));
+        }
+    }
+
+    @Override
+    public boolean hasAdvancedTooltip() {
+        return true;
+    }
+
+    @Override
+    public boolean showDebugTooltip() {
+        return true;
     }
 
     @Override
@@ -127,9 +145,9 @@ public record FluidConduit(
             return 1;
         }
 
-        if (transferRate() < o.transferRate()) {
+        if (transferRatePerTick() < o.transferRatePerTick()) {
             return -1;
-        } else if (transferRate() > o.transferRate()) {
+        } else if (transferRatePerTick() > o.transferRatePerTick()) {
             return 1;
         }
 

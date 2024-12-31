@@ -1,6 +1,6 @@
 package com.enderio.conduits.client.gui;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.conduits.api.ConduitDataAccessor;
 import com.enderio.conduits.api.Conduit;
 import com.enderio.conduits.api.ConduitData;
@@ -39,7 +39,7 @@ import java.util.function.Function;
 
 public class ConduitScreen extends EnderContainerScreen<ConduitMenu> {
 
-    public static final ResourceLocation TEXTURE = EnderIOBase.loc("textures/gui/conduit.png");
+    public static final ResourceLocation TEXTURE = EnderIO.loc("textures/gui/conduit.png");
     private static final int WIDTH = 206;
     private static final int HEIGHT = 195;
 
@@ -135,7 +135,7 @@ public class ConduitScreen extends EnderContainerScreen<ConduitMenu> {
                 new RedstoneControlPickerWidget(pos.x() + 90, pos.y() + 40,
                     () -> getOnDynamic(dyn -> dyn.control(), RedstoneControl.ACTIVE_WITH_SIGNAL),
                     mode -> actOnDynamic(dyn -> dyn.withRedstoneMode(mode)),
-                    EIOLang.CONDUIT_CHANNEL));
+                    EIOLang.REDSTONE_MODE));
 
             addRenderableWidget(
                 new DyeColorPickerWidget(pos.x() + 90 + 20, pos.y() + 40,
