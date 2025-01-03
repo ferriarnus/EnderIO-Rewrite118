@@ -33,9 +33,10 @@ public class FluidFilterMenu extends AbstractContainerMenu {
 
         for (int i = 0; i < capability.size(); i++) {
             int pSlot = i;
-            addSlot(new FluidFilterSlot(fluidStack -> capability.setEntry(pSlot, fluidStack) ,i ,14 + ( i % 5) * 18, 35 + 20 * ( i / 5)));
+            addSlot(new FluidFilterSlot(fluidStack -> capability.setEntry(pSlot, fluidStack), i, 14 + (i % 5) * 18,
+                    35 + 20 * (i / 5)));
         }
-        addInventorySlots(14,119, inventory);
+        addInventorySlots(14, 119, inventory);
     }
 
     public FluidFilterMenu(int pContainerId, Inventory inventory, ItemStack stack) {
@@ -43,7 +44,8 @@ public class FluidFilterMenu extends AbstractContainerMenu {
     }
 
     public static FluidFilterMenu factory(int pContainerId, Inventory inventory, FriendlyByteBuf buf) {
-        return new FluidFilterMenu(EIOMenus.FLUID_FILTER.get(), pContainerId, inventory, inventory.player.getMainHandItem());
+        return new FluidFilterMenu(EIOMenus.FLUID_FILTER.get(), pContainerId, inventory,
+                inventory.player.getMainHandItem());
     }
 
     @Override

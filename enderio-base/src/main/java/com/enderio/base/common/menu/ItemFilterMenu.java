@@ -4,6 +4,8 @@ import com.enderio.base.common.capability.ItemFilterCapability;
 import com.enderio.base.common.init.EIOCapabilities;
 import com.enderio.base.common.init.EIOMenus;
 import com.enderio.base.common.network.FilterUpdatePacket;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -13,9 +15,6 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import javax.annotation.Nullable;
-import java.util.List;
 
 public class ItemFilterMenu extends AbstractContainerMenu {
 
@@ -36,9 +35,10 @@ public class ItemFilterMenu extends AbstractContainerMenu {
         List<ItemStack> items = capability.getEntries();
         for (int i = 0; i < items.size(); i++) {
             int pSlot = i;
-            addSlot(new ItemFilterSlot(() -> capability.getEntries().get(pSlot), stack2 -> capability.setEntry(pSlot, stack2) ,i ,14 + ( i % 5) * 18, 35 + 20 * ( i / 5)));
+            addSlot(new ItemFilterSlot(() -> capability.getEntries().get(pSlot),
+                    stack2 -> capability.setEntry(pSlot, stack2), i, 14 + (i % 5) * 18, 35 + 20 * (i / 5)));
         }
-        addInventorySlots(14,119, inventory);
+        addInventorySlots(14, 119, inventory);
     }
 
     public ItemFilterMenu(int pContainerId, Inventory inventory, ItemStack stack) {
@@ -46,7 +46,8 @@ public class ItemFilterMenu extends AbstractContainerMenu {
     }
 
     public static ItemFilterMenu factory(int pContainerId, Inventory inventory, FriendlyByteBuf buf) {
-        return new ItemFilterMenu(EIOMenus.ITEM_FILTER.get(), pContainerId, inventory, inventory.player.getMainHandItem());
+        return new ItemFilterMenu(EIOMenus.ITEM_FILTER.get(), pContainerId, inventory,
+                inventory.player.getMainHandItem());
     }
 
     @Override
