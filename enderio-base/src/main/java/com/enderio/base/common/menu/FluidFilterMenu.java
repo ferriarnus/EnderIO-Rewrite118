@@ -15,8 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
-import java.util.List;
-
 public class FluidFilterMenu extends AbstractContainerMenu {
 
     private final ItemStack stack;
@@ -62,14 +60,26 @@ public class FluidFilterMenu extends AbstractContainerMenu {
 
         // Hotbar
         for (int x = 0; x < 9; x++) {
-            Slot ref = new Slot(inventory, x, xPos + x * 18, yPos + 58);
+            Slot ref = new Slot(inventory, x, xPos + x * 18, yPos + 58) {
+
+                @Override
+                public boolean mayPickup(Player player) {
+                    return !this.getItem().equals(FluidFilterMenu.this.stack);
+                }
+            };
             this.addSlot(ref);
         }
 
         // Inventory
         for (int y = 0; y < 3; y++) {
             for (int x = 0; x < 9; x++) {
-                Slot ref = new Slot(inventory, x + y * 9 + 9, xPos + x * 18, yPos + y * 18);
+                Slot ref = new Slot(inventory, x + y * 9 + 9, xPos + x * 18, yPos + y * 18) {
+
+                    @Override
+                    public boolean mayPickup(Player player) {
+                        return !this.getItem().equals(FluidFilterMenu.this.stack);
+                    }
+                };
                 this.addSlot(ref);
             }
         }
