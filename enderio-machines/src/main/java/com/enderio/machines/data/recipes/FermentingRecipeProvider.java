@@ -1,9 +1,10 @@
 package com.enderio.machines.data.recipes;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.base.common.init.EIOFluids;
-import com.enderio.machines.common.recipe.FermentingRecipe;
 import com.enderio.machines.common.tag.MachineTags;
+import com.enderio.machines.common.blocks.vat.FermentingRecipe;
+import java.util.concurrent.CompletableFuture;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -16,8 +17,6 @@ import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.fluids.FluidStack;
 import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
-
-import java.util.concurrent.CompletableFuture;
 
 public class FermentingRecipeProvider extends RecipeProvider {
 
@@ -34,9 +33,10 @@ public class FermentingRecipeProvider extends RecipeProvider {
         build(new FluidStack(EIOFluids.LIQUID_SUNSHINE.getSource(), 1000), SizedFluidIngredient.of(FluidTags.WATER, 1000), MachineTags.ItemTags.NATURAL_LIGHTS, MachineTags.ItemTags.SUNFLOWER, 200, recipeOutput);
     }
 
-    protected void build(FluidStack output, SizedFluidIngredient input, TagKey<Item> leftReagent, TagKey<Item> rightReagent,
-        int ticks, RecipeOutput recipeOutput) {
-        recipeOutput.accept(EnderIOBase.loc("fermenting/" + BuiltInRegistries.FLUID.getKey(output.getFluid()).getPath()),
-            new FermentingRecipe(input, leftReagent, rightReagent, output, ticks), null);
+    protected void build(FluidStack output, SizedFluidIngredient input, TagKey<Item> leftReagent,
+            TagKey<Item> rightReagent, int ticks, RecipeOutput recipeOutput) {
+        recipeOutput.accept(
+            EnderIO.loc("fermenting/" + BuiltInRegistries.FLUID.getKey(output.getFluid()).getPath()),
+                new FermentingRecipe(input, leftReagent, rightReagent, output, ticks), null);
     }
 }

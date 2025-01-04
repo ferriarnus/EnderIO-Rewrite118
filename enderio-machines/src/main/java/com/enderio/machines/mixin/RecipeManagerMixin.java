@@ -1,19 +1,14 @@
 package com.enderio.machines.mixin;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
+import com.enderio.machines.common.blocks.alloy.AlloySmeltingRecipe;
 import com.enderio.machines.common.config.MachinesConfig;
-import com.enderio.machines.common.recipe.AlloySmeltingRecipe;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.BiFunction;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -31,11 +26,19 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+
 @SuppressWarnings("ClassWithOnlyPrivateConstructors")
 @Mixin(value = RecipeManager.class, priority = 1_098)
 public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListener {
 
     private static Logger LOGGER;
+    @Unique
+    private static final ResourceLocation SMELTING = ResourceLocation.parse("minecraft:smelting");
 
     private RecipeManagerMixin(Gson gson, String directory) {
         super(gson, directory);
@@ -67,7 +70,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
     @Unique
     private void enderio$handleRecipe(RegistryOps<JsonElement> registryOps, ResourceLocation recipeId,
             JsonObject recipeJson, BiFunction<ResourceLocation, JsonElement, JsonElement> recipeCallback) {
-        if (!recipeJson.has("type") || !recipeJson.get("type").getAsString().equals("minecraft:smelting")) {
+        if (!recipeJson.has("type") || !ResourceLocation.parse(recipeJson.get("type").getAsString()).equals(SMELTING)) {
             return;
         }
 
@@ -105,7 +108,7 @@ public abstract class RecipeManagerMixin extends SimpleJsonResourceReloadListene
                 accessor.getExperience(), true);
 
         String path = "smelting/" + originalId.getNamespace() + "/" + originalId.getPath();
-        ResourceLocation id = EnderIOBase.loc(path);
+        ResourceLocation id = EnderIO.loc(path);
         return Optional.of(new RecipeHolder<>(id, recipe));
     }
 }

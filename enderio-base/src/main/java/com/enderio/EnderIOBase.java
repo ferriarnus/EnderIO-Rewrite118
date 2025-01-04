@@ -1,5 +1,6 @@
 package com.enderio;
 
+import com.enderio.base.api.EnderIO;
 import com.enderio.base.api.registry.EnderIORegistries;
 import com.enderio.base.common.config.BaseConfig;
 import com.enderio.base.common.config.BaseConfigLang;
@@ -69,13 +70,8 @@ import net.neoforged.neoforge.registries.NewRegistryEvent;
 @Mod(EnderIOBase.MODULE_MOD_ID)
 public class EnderIOBase {
     public static final String MODULE_MOD_ID = "enderio_base";
-    public static final String REGISTRY_NAMESPACE = "enderio";
 
-    public static Regilite REGILITE = new Regilite(REGISTRY_NAMESPACE);
-
-    public static ResourceLocation loc(String path) {
-        return ResourceLocation.fromNamespaceAndPath(REGISTRY_NAMESPACE, path);
-    }
+    public static Regilite REGILITE = new Regilite(EnderIO.NAMESPACE);
 
     public static IEventBus modEventBus;
     public static ModContainer modContainer;
@@ -86,7 +82,7 @@ public class EnderIOBase {
 
         // Ensure the enderio config subdirectory is present.
         try {
-            Files.createDirectories(FMLPaths.CONFIGDIR.get().resolve(REGISTRY_NAMESPACE));
+            Files.createDirectories(FMLPaths.CONFIGDIR.get().resolve(EnderIO.NAMESPACE));
         } catch (IOException e) {
             e.printStackTrace();
         }

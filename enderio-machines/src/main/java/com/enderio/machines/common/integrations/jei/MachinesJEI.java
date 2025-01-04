@@ -1,6 +1,6 @@
 package com.enderio.machines.common.integrations.jei;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.base.common.integrations.jei.subtype.EntityStorageSubtypeInterpreter;
 import com.enderio.machines.client.gui.screen.AlloySmelterScreen;
 import com.enderio.machines.client.gui.screen.EnchanterScreen;
@@ -11,6 +11,13 @@ import com.enderio.machines.client.gui.screen.SlicerScreen;
 import com.enderio.machines.client.gui.screen.SoulBinderScreen;
 import com.enderio.machines.client.gui.screen.VatScreen;
 import com.enderio.machines.client.gui.screen.base.MachineScreen;
+import com.enderio.machines.common.blocks.alloy.AlloySmelterMenu;
+import com.enderio.machines.common.blocks.alloy.PrimitiveAlloySmelterMenu;
+import com.enderio.machines.common.blocks.enchanter.EnchanterMenu;
+import com.enderio.machines.common.blocks.sag_mill.SagMillMenu;
+import com.enderio.machines.common.blocks.slicer.SlicerMenu;
+import com.enderio.machines.common.blocks.soul_binder.SoulBinderMenu;
+import com.enderio.machines.common.blocks.vat.VatMenu;
 import com.enderio.machines.common.init.MachineBlocks;
 import com.enderio.machines.common.init.MachineMenus;
 import com.enderio.machines.common.integrations.jei.category.AlloySmeltingCategory;
@@ -23,13 +30,6 @@ import com.enderio.machines.common.integrations.jei.category.SoulEngineCategory;
 import com.enderio.machines.common.integrations.jei.category.TankCategory;
 import com.enderio.machines.common.integrations.jei.category.VATCategory;
 import com.enderio.machines.common.integrations.jei.transfer.CrafterRecipeTransferHandler;
-import com.enderio.machines.common.menu.AlloySmelterMenu;
-import com.enderio.machines.common.menu.EnchanterMenu;
-import com.enderio.machines.common.menu.PrimitiveAlloySmelterMenu;
-import com.enderio.machines.common.menu.SagMillMenu;
-import com.enderio.machines.common.menu.SlicerMenu;
-import com.enderio.machines.common.menu.SoulBinderMenu;
-import com.enderio.machines.common.menu.VatMenu;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.constants.RecipeTypes;
@@ -46,7 +46,7 @@ import net.minecraft.world.item.ItemStack;
 public class MachinesJEI implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
-        return EnderIOBase.loc("machines");
+        return EnderIO.loc("machines");
     }
 
     @Override

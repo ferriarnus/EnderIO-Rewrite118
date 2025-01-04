@@ -1,8 +1,12 @@
 package com.enderio.machines;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.base.api.integration.IntegrationManager;
 import com.enderio.base.data.EIODataProvider;
+import com.enderio.machines.common.blocks.base.menu.GhostMachineSlot;
+import com.enderio.machines.common.blocks.base.menu.MachineSlot;
+import com.enderio.machines.common.blocks.base.menu.PreviewMachineSlot;
+import com.enderio.machines.common.blocks.enchanter.EnchanterMenu;
 import com.enderio.machines.common.config.MachinesConfig;
 import com.enderio.machines.common.config.MachinesConfigLang;
 import com.enderio.machines.common.init.MachineAttachments;
@@ -15,10 +19,6 @@ import com.enderio.machines.common.init.MachineTravelTargets;
 import com.enderio.machines.common.integrations.EnderIOMachinesSelfIntegration;
 import com.enderio.machines.common.lang.MachineEnumLang;
 import com.enderio.machines.common.lang.MachineLang;
-import com.enderio.machines.common.menu.EnchanterMenu;
-import com.enderio.machines.common.menu.GhostMachineSlot;
-import com.enderio.machines.common.menu.MachineSlot;
-import com.enderio.machines.common.menu.PreviewMachineSlot;
 import com.enderio.machines.common.tag.MachineTags;
 import com.enderio.machines.data.advancements.MachinesAdvancementGenerator;
 import com.enderio.machines.data.reagentdata.ReagentProvider;
@@ -59,9 +59,8 @@ import java.util.concurrent.CompletableFuture;
 @Mod(EnderIOMachines.MODULE_MOD_ID)
 public class EnderIOMachines {
     public static final String MODULE_MOD_ID = "enderio_machines";
-    public static final String REGISTRY_NAMESPACE = EnderIOBase.REGISTRY_NAMESPACE;
 
-    public static Regilite REGILITE = new Regilite(EnderIOBase.REGISTRY_NAMESPACE);
+    public static Regilite REGILITE = new Regilite(EnderIO.NAMESPACE);
 
     public EnderIOMachines(IEventBus modEventBus, ModContainer modContainer) {
         // Register machine config
@@ -91,14 +90,16 @@ public class EnderIOMachines {
         InterModComms.sendTo("inventorysorter", "slotblacklist", MachineSlot.class::getName);
         InterModComms.sendTo("inventorysorter", "slotblacklist", GhostMachineSlot.class::getName);
         InterModComms.sendTo("inventorysorter", "slotblacklist", PreviewMachineSlot.class::getName);
-        InterModComms.sendTo("inventorysorter", "slotblacklist", EnchanterMenu.EnchanterOutputMachineSlot.class::getName);
+        InterModComms.sendTo("inventorysorter", "slotblacklist",
+                EnchanterMenu.EnchanterOutputMachineSlot.class::getName);
     }
 
     @SubscribeEvent
     public static void gatherData(GatherDataEvent event) {
         DataGenerator generator = event.getGenerator();
         PackOutput packOutput = generator.getPackOutput();
-        CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture.supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
+        CompletableFuture<HolderLookup.Provider> lookupProvider = CompletableFuture
+                .supplyAsync(VanillaRegistries::createLookup, Util.backgroundExecutor());
 
         EIODataProvider provider = new EIODataProvider("machines");
 
@@ -119,7 +120,7 @@ public class EnderIOMachines {
         provider.addSubProvider(event.includeServer(), new MachineItemTagsProvider(packOutput, lookupProvider, b.contentsGetter(), event.getExistingFileHelper()));
 
         generator.addProvider(true, provider);
-        provider.addSubProvider(event.includeServer(), new AdvancementProvider(packOutput, event.getLookupProvider(), event.getExistingFileHelper(),
-            List.of(new MachinesAdvancementGenerator())));
+        provider.addSubProvider(event.includeServer(), new AdvancementProvider(packOutput, event.getLookupProvider(),
+                event.getExistingFileHelper(), List.of(new MachinesAdvancementGenerator())));
     }
 }

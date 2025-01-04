@@ -1,11 +1,11 @@
 package com.enderio.machines.data.recipes;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.base.common.init.EIOItems;
 import com.enderio.base.common.tag.EIOTags;
 import com.enderio.machines.common.blockentity.solar.SolarPanelTier;
+import com.enderio.machines.common.blocks.soul_binder.SoulBindingRecipe;
 import com.enderio.machines.common.init.MachineBlocks;
-import com.enderio.machines.common.recipe.SoulBindingRecipe;
 import com.enderio.machines.common.souldata.EngineSoul;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -85,7 +85,7 @@ public class SoulBindingRecipeProvider extends RecipeProvider {
 
     protected void build(ItemLike output, Ingredient input, int energy, int exp, Optional<ResourceLocation> entityType,
             Optional<MobCategory> mobCategory, Optional<String> souldata, RecipeOutput recipeOutput) {
-        recipeOutput.accept(EnderIOBase.loc("soulbinding/" + BuiltInRegistries.ITEM.getKey(output.asItem()).getPath()),
+        recipeOutput.accept(EnderIO.loc("soulbinding/" + BuiltInRegistries.ITEM.getKey(output.asItem()).getPath()),
                 new SoulBindingRecipe(new ItemStack(output), input, energy, exp, entityType, mobCategory, souldata),
                 null);
     }
