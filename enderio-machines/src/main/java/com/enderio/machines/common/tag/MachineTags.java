@@ -23,7 +23,7 @@ public class MachineTags {
         public static final TagKey<Item> SUNFLOWER = create("sunflower");
 
         private static TagKey<Item> create(String pName) {
-            return TagKey.create(Registries.ITEM, EnderIOBase.loc(pName));
+            return TagKey.create(Registries.ITEM, EnderIO.loc(pName));
         }
 
     }
