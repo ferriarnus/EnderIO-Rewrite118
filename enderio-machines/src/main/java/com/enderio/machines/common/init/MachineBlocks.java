@@ -278,7 +278,8 @@ public class MachineBlocks {
         .registerBlock("farming_station", properties -> new FarmingStationBlock(MachineBlockEntities.FARMING_STATION, properties),
             BlockBehaviour.Properties.of().strength(2.5f, 8))
         .setLootTable((l,t) -> MachinesLootTable.copyStandardComponentsWith(l, t, EIODataComponents.STORED_ENTITY.get()))
-        .setBlockStateProvider(MachineModelUtil::progressMachineBlock)
+        .setBlockStateProvider((prov, ctx) -> prov.simpleBlock(ctx.get(),
+            prov.models().getExistingFile(EnderIO.loc("block/" + ctx.getName()))))
         .addBlockTags(BlockTags.NEEDS_IRON_TOOL, BlockTags.MINEABLE_WITH_PICKAXE)
         .createBlockItem(ITEM_REGISTRY, item -> item.setTab(EIOCreativeTabs.MACHINES));
 
