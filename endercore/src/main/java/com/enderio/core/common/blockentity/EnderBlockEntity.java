@@ -4,6 +4,12 @@ import com.enderio.core.common.network.ClientboundDataSlotChange;
 import com.enderio.core.common.network.NetworkDataSlot;
 import com.enderio.core.common.network.ServerboundCDataSlotUpdate;
 import io.netty.buffer.Unpooled;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import me.liliandev.ensure.ensures.EnsureSide;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -23,13 +29,6 @@ import net.neoforged.neoforge.capabilities.BlockCapability;
 import net.neoforged.neoforge.capabilities.BlockCapabilityCache;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * Base block entity class for EnderIO.
@@ -108,6 +107,8 @@ public class EnderBlockEntity extends BlockEntity {
      */
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+        CompoundTag data = super.getUpdateTag(registries);
+
         ListTag dataList = new ListTag();
         for (int i = 0; i < dataSlots.size(); i++) {
             var slot = dataSlots.get(i);
@@ -120,8 +121,11 @@ public class EnderBlockEntity extends BlockEntity {
             dataList.add(slotTag);
         }
 
-        CompoundTag data = new CompoundTag();
         data.put(DATA, dataList);
+
+        // NEW: Add synced data properties.
+        saveAdditionalSynced(data, registries);
+
         return data;
     }
 
@@ -131,6 +135,8 @@ public class EnderBlockEntity extends BlockEntity {
      */
     @Override
     public void handleUpdateTag(CompoundTag syncData, HolderLookup.Provider lookupProvider) {
+        super.handleUpdateTag(syncData, lookupProvider);
+
         if (syncData.contains(DATA, Tag.TAG_LIST)) {
             ListTag dataList = syncData.getList(DATA, Tag.TAG_COMPOUND);
 
@@ -169,11 +175,13 @@ public class EnderBlockEntity extends BlockEntity {
         return buf.array();
     }
 
+    @Deprecated(forRemoval = true, since = "7.1")
     public <T extends NetworkDataSlot<?>> T addDataSlot(T slot) {
         dataSlots.add(slot);
         return slot;
     }
 
+    @Deprecated(forRemoval = true, since = "7.1")
     public void addAfterSyncRunnable(Runnable runnable) {
         afterDataSync.add(runnable);
     }
@@ -181,6 +189,7 @@ public class EnderBlockEntity extends BlockEntity {
     /**
      * Fire this when you change the value of a {@link NetworkDataSlot} on the client side.
      */
+    @Deprecated(forRemoval = true, since = "7.1")
     @EnsureSide(EnsureSide.Side.CLIENT)
     public <T> void clientUpdateSlot(@Nullable NetworkDataSlot<T> slot, T value) {
         if (slot == null) {
@@ -199,16 +208,18 @@ public class EnderBlockEntity extends BlockEntity {
     /**
      * Sync the BlockEntity to all tracking players. Don't call this if you don't know what you do
      */
+    @Deprecated(forRemoval = true, since = "7.1")
     @EnsureSide(EnsureSide.Side.SERVER)
     public void sync() {
         var syncData = createBufferSlotUpdate();
         if (syncData != null && level instanceof ServerLevel serverLevel) {
             setChanged();
             PacketDistributor.sendToPlayersTrackingChunk(serverLevel, new ChunkPos(getBlockPos()),
-                new ServerboundCDataSlotUpdate(getBlockPos(), syncData));
+                    new ServerboundCDataSlotUpdate(getBlockPos(), syncData));
         }
     }
 
+    @Deprecated(forRemoval = true, since = "7.1")
     @EnsureSide(EnsureSide.Side.CLIENT)
     public void clientHandleBufferSync(RegistryFriendlyByteBuf buf) {
         for (int amount = buf.readInt(); amount > 0; amount--) {
@@ -221,6 +232,7 @@ public class EnderBlockEntity extends BlockEntity {
         }
     }
 
+    @Deprecated(forRemoval = true, since = "7.1")
     @EnsureSide(EnsureSide.Side.SERVER)
     public void serverHandleBufferChange(RegistryFriendlyByteBuf buf) {
         int index;
@@ -233,12 +245,28 @@ public class EnderBlockEntity extends BlockEntity {
         dataSlots.get(index).read(buf);
     }
 
+    // New Sync
+
+    @Override
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        saveAdditionalSynced(tag, registries);
+    }
+
+    /**
+     * Override this to write data which should be synced over the network.
+     * Must be opted-in by overriding {@link BlockEntity#getUpdatePacket}.
+     */
+    protected void saveAdditionalSynced(CompoundTag tag, HolderLookup.Provider registries) {
+    }
+
     // endregion
 
     // region Neighboring Capabilities
 
     // TODO: NEO-PORT: We might want handling for Void contexts.
-    //                 However cannot have two methods with same method name and different context type params :(
+    // However cannot have two methods with same method name and different context
+    // type params :(
 
     @Nullable
     protected <T> T getSelfCapability(BlockCapability<T, Direction> capability, Direction side) {
@@ -259,13 +287,14 @@ public class EnderBlockEntity extends BlockEntity {
             return null;
         }
 
-        //noinspection unchecked
+        // noinspection unchecked
         return (T) selfCapabilities.get(capability).get(side).getCapability();
     }
 
     private void populateSelfCachesFor(Direction direction, BlockCapability<?, Direction> capability) {
         if (level instanceof ServerLevel serverLevel) {
-            selfCapabilities.get(capability).put(direction, BlockCapabilityCache.create(capability, serverLevel, getBlockPos(), direction));
+            selfCapabilities.get(capability)
+                    .put(direction, BlockCapabilityCache.create(capability, serverLevel, getBlockPos(), direction));
         }
     }
 
@@ -288,14 +317,16 @@ public class EnderBlockEntity extends BlockEntity {
             return null;
         }
 
-        //noinspection unchecked
+        // noinspection unchecked
         return (T) neighbourCapabilities.get(capability).get(side).getCapability();
     }
 
     private void populateNeighbourCachesFor(Direction direction, BlockCapability<?, Direction> capability) {
         if (level instanceof ServerLevel serverLevel) {
             BlockPos neighbourPos = getBlockPos().relative(direction);
-            neighbourCapabilities.get(capability).put(direction, BlockCapabilityCache.create(capability, serverLevel, neighbourPos, direction.getOpposite()));
+            neighbourCapabilities.get(capability)
+                    .put(direction, BlockCapabilityCache.create(capability, serverLevel, neighbourPos,
+                            direction.getOpposite()));
         }
     }
 

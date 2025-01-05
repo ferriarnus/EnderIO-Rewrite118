@@ -1,6 +1,6 @@
 package com.enderio.conduits.client.model.conduit.modifier;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.conduits.api.Conduit;
 import com.enderio.conduits.api.ConduitNode;
 import com.enderio.conduits.api.model.ConduitCoreModelModifier;
@@ -19,6 +19,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import net.neoforged.neoforge.client.model.IQuadTransformer;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -28,7 +29,7 @@ import java.util.List;
 
 public class FluidConduitCoreModelModifier implements ConduitCoreModelModifier {
 
-    private static final ModelResourceLocation FLUID_MODEL = ModelResourceLocation.standalone(EnderIOBase.loc("block/extra/fluids"));
+    private static final ModelResourceLocation FLUID_MODEL = ModelResourceLocation.standalone(EnderIO.loc("block/extra/fluids"));
 
     @Override
     public List<BakedQuad> createConnectionQuads(Holder<Conduit<?>> conduit, ConduitNode node, @Nullable Direction facing, Direction connectionDirection, RandomSource rand,
@@ -39,7 +40,7 @@ public class FluidConduitCoreModelModifier implements ConduitCoreModelModifier {
 
         FluidConduitData data = node.getData(ConduitTypes.Data.FLUID.get());
 
-        if (data != null && data.lockedFluid() != null) {
+        if (data != null && !data.lockedFluid().isSame(Fluids.EMPTY)) {
             return new FluidPaintQuadTransformer(data.lockedFluid())
                 .process(Minecraft.getInstance().getModelManager().getModel(FLUID_MODEL)
                     .getQuads(Blocks.COBBLESTONE.defaultBlockState(), facing, rand, ModelData.EMPTY, type));

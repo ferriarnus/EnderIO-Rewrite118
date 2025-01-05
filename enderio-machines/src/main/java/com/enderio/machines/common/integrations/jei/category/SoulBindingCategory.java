@@ -1,6 +1,6 @@
 package com.enderio.machines.common.integrations.jei.category;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.base.api.attachment.StoredEntityData;
 import com.enderio.base.common.init.EIODataComponents;
 import com.enderio.base.common.init.EIOItems;
@@ -8,11 +8,11 @@ import com.enderio.base.common.integrations.jei.JEIUtils;
 import com.enderio.base.common.item.tool.SoulVialItem;
 import com.enderio.base.common.tag.EIOTags;
 import com.enderio.machines.client.gui.screen.SoulBinderScreen;
+import com.enderio.machines.common.blocks.soul_binder.SoulBindingRecipe;
 import com.enderio.machines.common.init.MachineBlocks;
 import com.enderio.machines.common.integrations.jei.util.MachineRecipeCategory;
 import com.enderio.machines.common.integrations.jei.util.RecipeUtil;
 import com.enderio.machines.common.lang.MachineLang;
-import com.enderio.machines.common.recipe.SoulBindingRecipe;
 import com.enderio.machines.common.souldata.SoulData;
 import com.enderio.machines.common.souldata.SoulDataReloadListener;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
@@ -40,7 +40,8 @@ import static mezz.jei.api.recipe.RecipeIngredientRole.INPUT;
 import static mezz.jei.api.recipe.RecipeIngredientRole.OUTPUT;
 
 public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<SoulBindingRecipe>> {
-    public static final RecipeType<RecipeHolder<SoulBindingRecipe>> TYPE = JEIUtils.createRecipeType(EnderIOBase.REGISTRY_NAMESPACE, "soul_binding", SoulBindingRecipe.class);
+    public static final RecipeType<RecipeHolder<SoulBindingRecipe>> TYPE = JEIUtils.createRecipeType(EnderIO.NAMESPACE,
+            "soul_binding", SoulBindingRecipe.class);
 
     private final IDrawable background;
     private final IDrawable icon;
@@ -74,7 +75,9 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
     public void setRecipe(IRecipeLayoutBuilder builder, RecipeHolder<SoulBindingRecipe> recipe, IFocusGroup focuses) {
         List<ItemStack> vials = new ArrayList<>();
         Optional<IFocus<ItemStack>> output = focuses.getItemStackFocuses(OUTPUT).findFirst();
-        Optional<IFocus<ItemStack>> input = focuses.getItemStackFocuses(INPUT).filter(f -> f.getTypedValue().getItemStack().get().is(EIOItems.FILLED_SOUL_VIAL.asItem())).findFirst();
+        Optional<IFocus<ItemStack>> input = focuses.getItemStackFocuses(INPUT)
+                .filter(f -> f.getTypedValue().getItemStack().get().is(EIOItems.FILLED_SOUL_VIAL.asItem()))
+                .findFirst();
 
         if (input.isPresent()) {
             vials.add(input.get().getTypedValue().getIngredient());
@@ -86,9 +89,9 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
         } else if (recipe.value().mobCategory().isPresent()) {
 
             var allEntitiesOfCategory = BuiltInRegistries.ENTITY_TYPE.stream()
-                .filter(e -> e.getCategory().equals(recipe.value().mobCategory().get()))
-                .map(BuiltInRegistries.ENTITY_TYPE::getKey)
-                .toList();
+                    .filter(e -> e.getCategory().equals(recipe.value().mobCategory().get()))
+                    .map(BuiltInRegistries.ENTITY_TYPE::getKey)
+                    .toList();
 
             for (ResourceLocation entity : allEntitiesOfCategory) {
                 var item = new ItemStack(EIOItems.FILLED_SOUL_VIAL.get());
@@ -96,20 +99,26 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
                 vials.add(item);
             }
 
-        } else if (recipe.value().soulData().isPresent()){
+        } else if (recipe.value().soulData().isPresent()) {
             if (output.isPresent()) {
                 var item = new ItemStack(EIOItems.FILLED_SOUL_VIAL.get());
                 if (output.get().getTypedValue().getItemStack().get().is(EIOTags.Items.ENTITY_STORAGE)) {
-                    StoredEntityData data = output.get().getTypedValue().getItemStack().get().get(EIODataComponents.STORED_ENTITY);
+                    StoredEntityData data = output.get()
+                            .getTypedValue()
+                            .getItemStack()
+                            .get()
+                            .get(EIODataComponents.STORED_ENTITY);
                     SoulVialItem.setEntityType(item, data.entityType().get());
                     vials.add(item);
                 }
             } else {
-                SoulDataReloadListener<? extends SoulData> soulDataReloadListener = SoulDataReloadListener.fromString(recipe.value().soulData().get());
+                SoulDataReloadListener<? extends SoulData> soulDataReloadListener = SoulDataReloadListener
+                        .fromString(recipe.value().soulData().get());
 
-                var allEntitiesOfSoulData = BuiltInRegistries.ENTITY_TYPE.keySet().stream()
-                    .filter(r -> soulDataReloadListener.map.containsKey(r))
-                    .toList();
+                var allEntitiesOfSoulData = BuiltInRegistries.ENTITY_TYPE.keySet()
+                        .stream()
+                        .filter(r -> soulDataReloadListener.map.containsKey(r))
+                        .toList();
 
                 for (ResourceLocation entity : allEntitiesOfSoulData) {
                     var item = new ItemStack(EIOItems.FILLED_SOUL_VIAL.get());
@@ -121,7 +130,11 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
             if (output.isPresent()) {
                 var item = new ItemStack(EIOItems.FILLED_SOUL_VIAL.get());
                 if (output.get().getTypedValue().getItemStack().get().is(EIOTags.Items.ENTITY_STORAGE)) {
-                    StoredEntityData data = output.get().getTypedValue().getItemStack().get().get(EIODataComponents.STORED_ENTITY);
+                    StoredEntityData data = output.get()
+                            .getTypedValue()
+                            .getItemStack()
+                            .get()
+                            .get(EIODataComponents.STORED_ENTITY);
                     SoulVialItem.setEntityType(item, data.entityType().get());
                     vials.add(item);
                 }
@@ -130,11 +143,9 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
             }
         }
 
-        builder.addSlot(INPUT, 3, 4)
-            .addItemStacks(vials);
+        builder.addSlot(INPUT, 3, 4).addItemStacks(vials);
 
-        builder.addSlot(INPUT, 24, 4)
-            .addIngredients(recipe.value().getInput());
+        builder.addSlot(INPUT, 24, 4).addIngredients(recipe.value().getInput());
 
         var resultStack = RecipeUtil.getResultStacks(recipe).get(0).getItem();
         var results = new ArrayList<ItemStack>();
@@ -157,15 +168,14 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
             results.add(resultStack);
         }
 
-        builder.addSlot(OUTPUT, 77, 4)
-            .addItemStacks(results);
+        builder.addSlot(OUTPUT, 77, 4).addItemStack(new ItemStack(EIOItems.EMPTY_SOUL_VIAL.get()));
 
-        builder.addSlot(OUTPUT, 99, 4)
-            .addItemStack(new ItemStack(EIOItems.EMPTY_SOUL_VIAL.get()));
+        builder.addSlot(OUTPUT, 99, 4).addItemStacks(results);
     }
 
     @Override
-    public void draw(RecipeHolder<SoulBindingRecipe> recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(RecipeHolder<SoulBindingRecipe> recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics,
+            double mouseX, double mouseY) {
         Minecraft mc = Minecraft.getInstance();
 
         int cost = recipe.value().experience();
@@ -183,9 +193,11 @@ public class SoulBindingCategory extends MachineRecipeCategory<RecipeHolder<Soul
     }
 
     @Override
-    public List<Component> getTooltipStrings(RecipeHolder<SoulBindingRecipe> recipe, IRecipeSlotsView recipeSlotsView, double mouseX, double mouseY) {
+    public List<Component> getTooltipStrings(RecipeHolder<SoulBindingRecipe> recipe, IRecipeSlotsView recipeSlotsView,
+            double mouseX, double mouseY) {
         Minecraft mc = Minecraft.getInstance();
-        if (mouseX > 5 && mouseY > 34 && mouseX < 5 + mc.font.width(getBasicEnergyString(recipe)) && mouseY < 34 + mc.font.lineHeight) {
+        if (mouseX > 5 && mouseY > 34 && mouseX < 5 + mc.font.width(getBasicEnergyString(recipe))
+                && mouseY < 34 + mc.font.lineHeight) {
             return List.of(MachineLang.TOOLTIP_ENERGY_EQUIVALENCE);
         }
 

@@ -1,6 +1,6 @@
 package com.enderio.conduits.client.gui.conduit;
 
-import com.enderio.EnderIOBase;
+import com.enderio.base.api.EnderIO;
 import com.enderio.conduits.api.ConduitDataAccessor;
 import com.enderio.conduits.api.screen.ConduitScreenExtension;
 import com.enderio.base.common.lang.EIOLang;
@@ -23,6 +23,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Fluids;
 import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
 import org.joml.Vector2i;
 
@@ -31,11 +32,14 @@ import java.util.function.Supplier;
 
 public final class FluidConduitScreenExtension implements ConduitScreenExtension {
 
-    private static final ResourceLocation WIDGET_TEXTURE = EnderIOBase.loc("textures/gui/fluidbackground.png");
+    private static final ResourceLocation WIDGET_TEXTURE = EnderIO.loc("textures/gui/fluidbackground.png");
 
     @Override
     public List<AbstractWidget> createWidgets(Screen screen, ConduitDataAccessor conduitDataAccessor, UpdateDispatcher updateConduitData,
         Supplier<Direction> direction, Vector2i widgetsStart) {
+        if (conduitDataAccessor.getOrCreateData(ConduitTypes.Data.FLUID.get()).lockedFluid().isSame(Fluids.EMPTY)) {
+            return List.of();
+        }
         return List.of(
             new FluidWidget(widgetsStart.add(0, 20),
                 () -> conduitDataAccessor.getOrCreateData(ConduitTypes.Data.FLUID.get()).lockedFluid(),
@@ -66,7 +70,7 @@ public final class FluidConduitScreenExtension implements ConduitScreenExtension
             if (isHoveredOrFocused()) {
                 MutableComponent tooltip = EIOLang.FLUID_CONDUIT_CHANGE_FLUID1.copy();
                 tooltip.append("\n").append(EIOLang.FLUID_CONDUIT_CHANGE_FLUID2);
-                if (currentFluid.get() != null) {
+                if (!currentFluid.get().isSame(Fluids.EMPTY)) {
                     tooltip.append("\n").append(TooltipUtil.withArgs(EIOLang.FLUID_CONDUIT_CHANGE_FLUID3, currentFluid.get().getFluidType().getDescription()));
                 }
                 setTooltip(Tooltip.create(TooltipUtil.style(tooltip)));
@@ -76,7 +80,7 @@ public final class FluidConduitScreenExtension implements ConduitScreenExtension
             RenderSystem.defaultBlendFunc();
             RenderSystem.enableDepthTest();
             guiGraphics.blit(WIDGET_TEXTURE, getX(), getY(), 0, 0, this.width, this.height);
-            if (currentFluid.get() == null) {
+            if (currentFluid.get().isSame(Fluids.EMPTY)) {
                 return;
             }
 

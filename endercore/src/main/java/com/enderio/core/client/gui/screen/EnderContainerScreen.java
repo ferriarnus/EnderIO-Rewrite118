@@ -1,10 +1,14 @@
 package com.enderio.core.client.gui.screen;
 
-import com.enderio.core.common.menu.BaseBlockEntityMenu;
+import com.enderio.core.common.menu.LegacyBaseBlockEntityMenu;
 import com.enderio.core.common.menu.SlotWithOverlay;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ComponentPath;
 import net.minecraft.client.gui.GuiGraphics;
@@ -22,10 +26,6 @@ import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 public abstract class EnderContainerScreen<T extends AbstractContainerMenu> extends AbstractContainerScreen<T> {
 
     private static final int ITEM_RENDER_Z = 400;
@@ -42,13 +42,22 @@ public abstract class EnderContainerScreen<T extends AbstractContainerMenu> exte
         super(pMenu, pPlayerInventory, pTitle);
     }
 
+    /**
+     * Utility for server-side button presses
+     * @param id The button ID that was pressed.
+     */
+    protected void handleButtonPress(int id) {
+        Objects.requireNonNull(this.getMinecraft().gameMode).handleInventoryButtonClick(getMenu().containerId, id);
+    }
+
     protected void centerAlignTitleLabelX() {
         this.titleLabelX = (this.imageWidth - this.font.width(this.title)) / 2;
     }
 
     @Override
     public void render(GuiGraphics pGuiGraphics, int pMouseX, int pMouseY, float pPartialTick) {
-        if (menu instanceof BaseBlockEntityMenu<?> baseBlockEntityMenu && baseBlockEntityMenu.getBlockEntity() == null) {
+        if (menu instanceof LegacyBaseBlockEntityMenu<?> baseBlockEntityMenu
+                && baseBlockEntityMenu.getBlockEntity() == null) {
             return;
         }
 
@@ -74,7 +83,8 @@ public abstract class EnderContainerScreen<T extends AbstractContainerMenu> exte
 
             for (var overlay : overlayRenderables.get(layer)) {
                 if (!(overlay instanceof AbstractWidget widget) || widget.isActive()) {
-                    overlay.render(pGuiGraphics, pMouseX, pMouseY, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+                    overlay.render(pGuiGraphics, pMouseX, pMouseY,
+                            Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
 
                     if (overlay instanceof BaseOverlay baseOverlay) {
                         zOffset += baseOverlay.getAdditionalZOffset();
@@ -114,7 +124,8 @@ public abstract class EnderContainerScreen<T extends AbstractContainerMenu> exte
     }
 
     @Override
-    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot, @Nullable String countString) {
+    protected void renderSlotContents(GuiGraphics guiGraphics, ItemStack itemstack, Slot slot,
+            @Nullable String countString) {
         super.renderSlotContents(guiGraphics, itemstack, slot, countString);
 
         if (slot instanceof SlotWithOverlay slotWithOverlay) {
@@ -158,7 +169,8 @@ public abstract class EnderContainerScreen<T extends AbstractContainerMenu> exte
     @Override
     public void resize(Minecraft pMinecraft, int pWidth, int pHeight) {
         // Gather state to persist
-        Map<String, Object> valuesBeforeResize = stateRestoringWidgets.entrySet().stream()
+        Map<String, Object> valuesBeforeResize = stateRestoringWidgets.entrySet()
+                .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().getValueForRestore()));
 
         super.resize(pMinecraft, pWidth, pHeight);

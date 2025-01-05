@@ -3,6 +3,11 @@ package com.enderio.core.client.gui.widgets;
 import com.enderio.core.client.gui.screen.EnderScreen;
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import javax.annotation.Nullable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -13,17 +18,13 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector2i;
 
-import javax.annotation.Nullable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
 public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButton {
 
     private final Class<T> clazz;
     private final Supplier<T> getter;
     private final Consumer<T> setter;
+
+    private T previousValue;
 
     private final Map<T, SelectionWidget> icons = new HashMap<>();
 
@@ -39,7 +40,8 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
 
     private final Component optionName;
 
-    public BaseEnumPickerWidget(int pX, int pY, int width, int height, Class<T> clazz, Supplier<T> getter, Consumer<T> setter, Component optionName) {
+    public BaseEnumPickerWidget(int pX, int pY, int width, int height, Class<T> clazz, Supplier<T> getter,
+            Consumer<T> setter, Component optionName) {
         super(pX, pY, width, height, Component.empty());
 
         this.clazz = clazz;
@@ -52,9 +54,8 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
         Vector2i elementDistance = new Vector2i(width, height).add(SPACE_BETWEEN_ELEMENTS, SPACE_BETWEEN_ELEMENTS);
         for (int i = 0; i < values.length; i++) {
             T value = values[i];
-            Vector2i subWidgetPos = new Vector2i(
-                pos.x() + getColumn(i) * elementDistance.x() + pX,
-                pos.y() + getRow(i) * elementDistance.y() + pY);
+            Vector2i subWidgetPos = new Vector2i(pos.x() + getColumn(i) * elementDistance.x() + pX,
+                    pos.y() + getRow(i) * elementDistance.y() + pY);
             SelectionWidget widget = new SelectionWidget(subWidgetPos, width + 2, height + 2, value);
 
             Component tooltip = getValueTooltip(value);
@@ -83,6 +84,7 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
 
     @Nullable
     public abstract Component getValueTooltip(T value);
+
     public abstract ResourceLocation getValueIcon(T value);
 
     public T[] getValues() {
@@ -138,12 +140,19 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
         return index / ELEMENTS_IN_ROW;
     }
 
-    @Nullable private T tooltipDisplayCache;
+    @Nullable
+    private T tooltipDisplayCache;
 
     @Override
     public void renderButtonFace(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         T value = getValue();
         guiGraphics.blitSprite(getValueIcon(value), getX(), getY(), getWidth(), getHeight());
+
+        // TODO: Temp solution for the value changing externally (data sync)
+        if (previousValue != value) {
+            previousValue = value;
+            updateTooltip(value);
+        }
     }
 
     private void updateTooltip(T value) {
@@ -161,7 +170,8 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
     }
 
     @Override
-    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {}
+    public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+    }
 
     public boolean isExpanded() {
         return Minecraft.getInstance().screen instanceof SelectionScreen;
@@ -197,13 +207,14 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
 
         @Override
         public void renderTransparentBackground(GuiGraphics pGuiGraphics) {
-            //Don't make background dark
+            // Don't make background dark
         }
 
         @Override
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
-            if (!(parentWidget.expandTopLeft.x() <= mouseX && parentWidget.expandBottomRight.x() >= mouseX && parentWidget.expandTopLeft.y() <= mouseY && parentWidget.expandBottomRight.y() >= mouseY
-                || parentWidget.isMouseOver(mouseX, mouseY))) {
+            if (!(parentWidget.expandTopLeft.x() <= mouseX && parentWidget.expandBottomRight.x() >= mouseX
+                    && parentWidget.expandTopLeft.y() <= mouseY && parentWidget.expandBottomRight.y() >= mouseY
+                    || parentWidget.isMouseOver(mouseX, mouseY))) {
                 Minecraft.getInstance().popGuiLayer();
             }
 
@@ -241,7 +252,8 @@ public abstract class BaseEnumPickerWidget<T extends Enum<T>> extends EnderButto
         }
 
         @Override
-        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {}
+        public void updateWidgetNarration(NarrationElementOutput pNarrationElementOutput) {
+        }
 
         @Override
         public void renderButtonFace(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {

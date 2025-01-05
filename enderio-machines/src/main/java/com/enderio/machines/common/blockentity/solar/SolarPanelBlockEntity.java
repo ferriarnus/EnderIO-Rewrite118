@@ -1,5 +1,7 @@
 package com.enderio.machines.common.blockentity.solar;
 
+import static com.enderio.machines.common.blocks.powered_spawner.PoweredSpawnerBlockEntity.NO_MOB;
+
 import com.enderio.base.api.attachment.StoredEntityData;
 import com.enderio.base.api.capacitor.FixedScalable;
 import com.enderio.base.api.io.IOMode;
@@ -8,7 +10,7 @@ import com.enderio.base.common.init.EIODataComponents;
 import com.enderio.base.common.tag.EIOTags;
 import com.enderio.core.common.network.NetworkDataSlot;
 import com.enderio.machines.common.MachineNBTKeys;
-import com.enderio.machines.common.blockentity.base.PoweredMachineBlockEntity;
+import com.enderio.machines.common.blockentity.base.LegacyPoweredMachineBlockEntity;
 import com.enderio.machines.common.blockentity.multienergy.MultiEnergyNode;
 import com.enderio.machines.common.blockentity.multienergy.MultiEnergyStorageWrapper;
 import com.enderio.machines.common.init.MachineBlockEntities;
@@ -18,6 +20,8 @@ import com.enderio.machines.common.souldata.SolarSoul;
 import dev.gigaherz.graph3.Graph;
 import dev.gigaherz.graph3.GraphObject;
 import dev.gigaherz.graph3.Mergeable;
+import java.util.List;
+import java.util.Optional;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -32,12 +36,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.client.event.RecipesUpdatedEvent;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-import java.util.Optional;
-
-import static com.enderio.machines.common.blockentity.PoweredSpawnerBlockEntity.NO_MOB;
-
-public class SolarPanelBlockEntity extends PoweredMachineBlockEntity {
+public class SolarPanelBlockEntity extends LegacyPoweredMachineBlockEntity {
 
     private final ISolarPanelTier tier;
 
@@ -49,12 +48,15 @@ public class SolarPanelBlockEntity extends PoweredMachineBlockEntity {
     private boolean reloadCache = !reload;
 
     public SolarPanelBlockEntity(BlockPos worldPosition, BlockState blockState, SolarPanelTier tier) {
-        super(EnergyIOMode.Output, new FixedScalable(tier::getStorageCapacity), new FixedScalable(tier::getStorageCapacity),
-            MachineBlockEntities.SOLAR_PANELS.get(tier).get(), worldPosition, blockState);
+        super(EnergyIOMode.Output, new FixedScalable(tier::getStorageCapacity),
+                new FixedScalable(tier::getStorageCapacity), MachineBlockEntities.SOLAR_PANELS.get(tier).get(),
+                worldPosition, blockState);
 
         this.tier = tier;
-        this.node = new MultiEnergyNode(() -> energyStorage, () -> (MultiEnergyStorageWrapper) getExposedEnergyStorage(), worldPosition);
-        addDataSlot(NetworkDataSlot.RESOURCE_LOCATION.create(() -> this.getEntityType().orElse(NO_MOB),this::setEntityType));
+        this.node = new MultiEnergyNode(() -> energyStorage,
+                () -> (MultiEnergyStorageWrapper) getExposedEnergyStorage(), worldPosition);
+        addDataSlot(NetworkDataSlot.RESOURCE_LOCATION.create(() -> this.getEntityType().orElse(NO_MOB),
+                this::setEntityType));
     }
 
     @Nullable
@@ -92,59 +94,56 @@ public class SolarPanelBlockEntity extends PoweredMachineBlockEntity {
             return false;
         }
         if (!this.level.dimensionType().hasSkyLight()) {
-            return soulData == null || (soulData.level().isPresent() && !soulData.level().get().equals(this.level.dimension()));
+            return soulData == null
+                    || (soulData.level().isPresent() && !soulData.level().get().equals(this.level.dimension()));
         }
 
         return getGenerationRate() > 0;
     }
 
+    /**
+     * Calculates the generation rate for this solar panel.
+     * Only generates energy during day before 12_000 ticks (10 minute aka half a minecraft day), or
+     * if its day and either night or if it hasLiquidSunshine.
+     * @see SolarPanelBlockEntity#hasLiquidSunshine()
+     *
+     * @return this solar panels generation rate.
+     */
     public int getGenerationRate() {
-        int minuteInTicks = 20 * 60;
         if (level == null) {
             return 0;
         }
-        boolean day = true;
-        boolean night = false;
+
+        boolean day;
+        boolean night;
         if (soulData != null) {
             day = soulData.daytime();
             night = soulData.nighttime();
+        } else {
+            day = level.isDay();
+            night = level.isNight();
         }
 
-        int dayTime = (int) (level.getDayTime() % (minuteInTicks * 20));
         float progress = 0;
-        if ((day && night) || (day && hasLiquidSunshine())) {
+        if (day && (night || hasLiquidSunshine())) {
             progress = 1;
         } else if (day) {
-            if (dayTime > minuteInTicks * 9) {
+            int dayTime = (int) (level.getDayTime() % GameTicks.DAY_IN_TICKS);
+            if (dayTime > GameTicks.minutesToTicks(12)) {
                 return 0;
             }
-
-            if (dayTime < minuteInTicks) {
-                return 0;
-            }
-
-            progress = dayTime > minuteInTicks * 5 ? 10 * minuteInTicks - dayTime : dayTime;
-            progress = (progress - minuteInTicks) / (4 * minuteInTicks);
+            progress = dayTime > GameTicks.minutesToTicks(5) ? GameTicks.minutesToTicks(10) - dayTime : dayTime;
+            progress = (progress - GameTicks.MINUTE_IN_TICKS) / GameTicks.minutesToTicks(4);
         } else if (night) {
-            if (dayTime < minuteInTicks * 11) {
-                return 0;
-            }
-
-            if (dayTime > minuteInTicks * 18) {
-                return 0;
-            }
-            progress = dayTime > minuteInTicks * 15 ? 20 * minuteInTicks - dayTime :  minuteInTicks * 15 - dayTime;
-            progress = (progress - minuteInTicks) / (4 * minuteInTicks);
+            return 0;
         }
 
         double easing = easing(progress);
 
-        if (level.isRaining() && !level.isThundering()) {
-            easing -= 0.3f;
-        }
-
         if (level.isThundering()) {
             easing -= 0.7f;
+        } else if (level.isRaining()) {
+            easing -= 0.3f;
         }
 
         if (easing < 0) {
@@ -197,17 +196,19 @@ public class SolarPanelBlockEntity extends PoweredMachineBlockEntity {
             Graph.integrate(node, List.of());
         }
 
-        for (Direction direction: new Direction[] {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST}) {
-            if (level.getBlockEntity(worldPosition.relative(direction)) instanceof SolarPanelBlockEntity panel && panel.tier == tier) {
+        for (Direction direction : new Direction[] { Direction.NORTH, Direction.EAST, Direction.SOUTH,
+                Direction.WEST }) {
+            if (level.getBlockEntity(worldPosition.relative(direction)) instanceof SolarPanelBlockEntity panel
+                    && panel.tier == tier) {
                 Graph.connect(node, panel.node);
             }
         }
     }
 
-    //Reference: EaseInOutQuad Function
+    // Reference: EaseInOutQuad Function
     private static double easing(float progress) {
         if (progress > 0.5f) {
-            return 1 - Math.pow(-2*progress + 2, 2)/2;
+            return 1 - Math.pow(-2 * progress + 2, 2) / 2;
         }
 
         return 2 * progress * progress;
@@ -268,5 +269,23 @@ public class SolarPanelBlockEntity extends PoweredMachineBlockEntity {
     @SubscribeEvent
     static void onReload(RecipesUpdatedEvent event) {
         reload = !reload;
+    }
+
+    private static final class GameTicks {
+        static final int TICKS_PER_SECOND = 20;
+        static final int MINUTE_IN_TICKS = TICKS_PER_SECOND * 60;
+        static final int DAY_DURATION_MIN = 20;
+        static final int DAY_IN_TICKS = DAY_DURATION_MIN * MINUTE_IN_TICKS;
+
+        /**
+         * Converts minutes to game ticks.
+         * @see GameTicks#TICKS_PER_SECOND
+         *
+         * @param minutes to convert.
+         * @return corresponding minutes in game ticks.
+         */
+        static int minutesToTicks(int minutes) {
+            return minutes * 60 * TICKS_PER_SECOND;
+        }
     }
 }
