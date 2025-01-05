@@ -1,6 +1,5 @@
 package com.enderio.machines.client.gui.screen;
 
-import com.enderio.EnderIOBase;
 import com.enderio.base.api.EnderIO;
 import com.enderio.base.client.gui.widget.EIOCommonWidgets;
 import com.enderio.base.client.gui.widget.RedstoneControlPickerWidget;
@@ -9,7 +8,7 @@ import com.enderio.machines.client.gui.screen.base.MachineScreen;
 import com.enderio.machines.client.gui.widget.ActivityWidget;
 import com.enderio.machines.client.gui.widget.FluidStackStaticWidget;
 import com.enderio.machines.client.gui.widget.NewCapacitorEnergyWidget;
-import com.enderio.machines.common.menu.FarmingStationMenu;
+import com.enderio.machines.common.blocks.farming_station.FarmingStationMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;

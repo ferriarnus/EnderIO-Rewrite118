@@ -1,10 +1,9 @@
-package com.enderio.machines.common.menu;
+package com.enderio.machines.common.blocks.farming_station;
 
 import com.enderio.machines.common.blocks.base.fluid.FluidStorageInfo;
 import com.enderio.machines.common.blocks.base.fluid.FluidStorageSyncSlot;
 import com.enderio.machines.common.blocks.base.menu.MachineSlot;
 import com.enderio.machines.common.blocks.base.menu.PoweredMachineMenu;
-import com.enderio.machines.common.blocks.farming_station.FarmingStationBlockEntity;
 import com.enderio.machines.common.init.MachineBlockEntities;
 import com.enderio.machines.common.init.MachineMenus;
 import net.minecraft.network.RegistryFriendlyByteBuf;

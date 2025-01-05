@@ -50,7 +50,7 @@ import com.enderio.machines.common.blocks.vacuum.xp.XPVacuumMenu;
 import com.enderio.machines.common.blocks.vat.VatMenu;
 import com.enderio.machines.common.blocks.wired_charger.WiredChargerMenu;
 import com.enderio.machines.common.menu.CapacitorBankMenu;
-import com.enderio.machines.common.menu.FarmingStationMenu;
+import com.enderio.machines.common.blocks.farming_station.FarmingStationMenu;
 import com.enderio.regilite.holder.RegiliteMenu;
 import com.enderio.regilite.registry.MenuRegistry;
 import net.neoforged.bus.api.IEventBus;
