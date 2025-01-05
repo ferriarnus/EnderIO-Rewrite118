@@ -31,6 +31,9 @@ public class FermentingRecipeProvider extends RecipeProvider {
         build(new FluidStack(EIOFluids.NUTRIENT_DISTILLATION.getSource(), 250), SizedFluidIngredient.of(FluidTags.WATER, 1000), ItemTags.MEAT, Tags.Items.CROPS, 200, recipeOutput);
         build(new FluidStack(EIOFluids.FIRE_WATER.getSource(), 1000), SizedFluidIngredient.of(EIOFluids.HOOTCH.getSource(), 1000), MachineTags.ItemTags.BLAZE_POWDER, Tags.Items.DUSTS_REDSTONE, 400, recipeOutput);
         build(new FluidStack(EIOFluids.LIQUID_SUNSHINE.getSource(), 1000), SizedFluidIngredient.of(FluidTags.WATER, 1000), MachineTags.ItemTags.NATURAL_LIGHTS, MachineTags.ItemTags.SUNFLOWER, 200, recipeOutput);
+        build(new FluidStack(EIOFluids.LIQUID_DARKNESS.getSource(), 1000), SizedFluidIngredient.of(EIOFluids.LIQUID_SUNSHINE.getSource(), 500), MachineTags.ItemTags.AMETHYST, MachineTags.ItemTags.GRAINS, 600, recipeOutput);
+        build(new FluidStack(EIOFluids.CLOUD_SEED.getSource(), 1000), SizedFluidIngredient.of(FluidTags.WATER, 1000), MachineTags.ItemTags.PRISMARINE, MachineTags.ItemTags.CLOUD_COLD, 400, recipeOutput);
+        build(new FluidStack(EIOFluids.CLOUD_SEED_CONCENTRATED.getSource(), 500), SizedFluidIngredient.of(EIOFluids.CLOUD_SEED_CONCENTRATED.getSource(), 1000), MachineTags.ItemTags.LIGHTNING_ROD, MachineTags.ItemTags.WIND_CHARGES, 600, recipeOutput);
     }
 
     protected void build(FluidStack output, SizedFluidIngredient input, TagKey<Item> leftReagent,

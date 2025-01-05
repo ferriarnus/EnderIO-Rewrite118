@@ -1,14 +1,17 @@
 package com.enderio.machines.data.tag;
 
 import com.enderio.base.api.EnderIO;
+import com.enderio.base.common.init.EIOItems;
 import com.enderio.machines.common.tag.MachineTags;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 import java.util.ArrayList;
@@ -17,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
+//TODO remove when regilite support
 public class MachineItemTagsProvider extends ItemTagsProvider {
 
     private static final Map<TagKey<Item>, List<Item>> tags = new HashMap<>();
@@ -31,6 +35,12 @@ public class MachineItemTagsProvider extends ItemTagsProvider {
         tag(MachineTags.ItemTags.NATURAL_LIGHTS, Items.GLOWSTONE_DUST, Items.GLOWSTONE, Items.SEA_LANTERN, Items.SEA_PICKLE, Items.GLOW_LICHEN, Items.GLOW_BERRIES, Items.GLOW_INK_SAC);
         tag(MachineTags.ItemTags.SUNFLOWER, Items.SUNFLOWER);
         tag(MachineTags.ItemTags.BLAZE_POWDER, Items.BLAZE_POWDER);
+        tag(MachineTags.ItemTags.AMETHYST, Items.AMETHYST_SHARD, Items.AMETHYST_BLOCK);
+        tag(MachineTags.ItemTags.GRAINS, EIOItems.GRAINS_OF_INFINITY.get());
+        tag(MachineTags.ItemTags.PRISMARINE, Items.PRISMARINE_SHARD);
+        tag(MachineTags.ItemTags.CLOUD_COLD, Items.SNOW, Items.SNOW_BLOCK, Items.SNOWBALL, Items.ICE, Items.PACKED_ICE, Items.BLUE_ICE);
+        tag(MachineTags.ItemTags.LIGHTNING_ROD, Items.LIGHTNING_ROD);
+        tag(MachineTags.ItemTags.WIND_CHARGES, Items.WIND_CHARGE);
 
         tags.forEach((key, list) -> {
                 var holder = tag(key);
