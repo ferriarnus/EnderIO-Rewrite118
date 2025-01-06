@@ -23,7 +23,6 @@ import com.enderio.machines.common.blocks.base.block.ProgressMachineBlock;
 import com.enderio.machines.common.blocks.base.blockentity.MachineBlockEntity;
 import com.enderio.machines.common.blocks.block_detector.BlockDetectorBlock;
 import com.enderio.machines.common.blocks.enchanter.EnchanterBlock;
-import com.enderio.machines.common.blocks.farming_station.FarmingStationBlock;
 import com.enderio.machines.common.blocks.fluid_tank.FluidTankBlock;
 import com.enderio.machines.common.blocks.fluid_tank.FluidTankBlockItem;
 import com.enderio.machines.common.blocks.obelisks.aversion.AversionObeliskBlockEntity;
@@ -274,13 +273,13 @@ public class MachineBlocks {
             .setTranslation("XP Obelisk")
             .createBlockItem(ITEM_REGISTRY, item -> item.setTab((EIOCreativeTabs.MACHINES)));
 
-    public static final RegiliteBlock<FarmingStationBlock> FARMING_STATION = BLOCK_REGISTRY
-        .registerBlock("farming_station", properties -> new FarmingStationBlock(MachineBlockEntities.FARMING_STATION, properties),
+    public static final RegiliteBlock<ProgressMachineBlock> FARMING_STATION = BLOCK_REGISTRY
+        .registerBlock("farming_station", properties -> new ProgressMachineBlock(MachineBlockEntities.FARMING_STATION, properties),
             BlockBehaviour.Properties.of().strength(2.5f, 8))
-        .setLootTable((l,t) -> MachinesLootTable.copyStandardComponentsWith(l, t, EIODataComponents.STORED_ENTITY.get()))
+        .setLootTable(MachinesLootTable::copyComponents)
+        .addBlockTags(BlockTags.NEEDS_IRON_TOOL, BlockTags.MINEABLE_WITH_PICKAXE)
         .setBlockStateProvider((prov, ctx) -> prov.simpleBlock(ctx.get(),
             prov.models().getExistingFile(EnderIO.loc("block/" + ctx.getName()))))
-        .addBlockTags(BlockTags.NEEDS_IRON_TOOL, BlockTags.MINEABLE_WITH_PICKAXE)
         .createBlockItem(ITEM_REGISTRY, item -> item.setTab(EIOCreativeTabs.MACHINES));
 
     public static final RegiliteBlock<MachineBlock<InhibitorObeliskBlockEntity>> INHIBITOR_OBELISK = BLOCK_REGISTRY

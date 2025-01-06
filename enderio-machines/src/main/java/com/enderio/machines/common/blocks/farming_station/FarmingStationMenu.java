@@ -14,20 +14,16 @@ public class FarmingStationMenu extends PoweredMachineMenu<FarmingStationBlockEn
 
     public static final int VISIBILITY_BUTTON_ID = 0;
 
-    private final FluidStorageSyncSlot fluidSlot;
-
     public FarmingStationMenu(int pContainerId, Inventory inventory, FarmingStationBlockEntity blockEntity) {
         super(MachineMenus.FARMING_STATION.get(), pContainerId, inventory, blockEntity);
         addSlots();
 
-        fluidSlot = addSyncSlot(FluidStorageSyncSlot.readOnly(() -> FluidStorageInfo.of(blockEntity.getFluidTank())));
     }
 
     public FarmingStationMenu(int pContainerId, Inventory inventory, RegistryFriendlyByteBuf buf) {
         super(MachineMenus.FARMING_STATION.get(), pContainerId, inventory,buf, MachineBlockEntities.FARMING_STATION.get());
         addSlots();
 
-        fluidSlot = addSyncSlot(FluidStorageSyncSlot.standalone());
     }
 
     private void addSlots() {
@@ -69,7 +65,4 @@ public class FarmingStationMenu extends PoweredMachineMenu<FarmingStationBlockEn
         return false;
     }
 
-    public FluidStorageInfo getFluidTank() {
-        return fluidSlot.get();
-    }
 }

@@ -7,7 +7,6 @@ import com.enderio.base.common.lang.EIOLang;
 import com.enderio.machines.client.gui.screen.base.MachineScreen;
 import com.enderio.machines.client.gui.widget.ActivityWidget;
 import com.enderio.machines.client.gui.widget.CapacitorEnergyWidget;
-import com.enderio.machines.client.gui.widget.FluidStackStaticWidget;
 import com.enderio.machines.client.gui.widget.NewCapacitorEnergyWidget;
 import com.enderio.machines.common.blocks.farming_station.FarmingStationMenu;
 import net.minecraft.client.gui.GuiGraphics;
@@ -47,8 +46,6 @@ public class FarmingStationScreen extends MachineScreen<FarmingStationMenu> {
             EIOLang.SHOW_RANGE,
             menu::isRangeVisible,
             (ignore) -> handleButtonPress(FarmingStationMenu.VISIBILITY_BUTTON_ID)));
-
-//        addRenderableWidget(new FluidStackStaticWidget(leftPos + 20, topPos + 22, 16, 16, menu::getFluidTank));
 
         addRenderableOnly(new ActivityWidget(leftPos + imageWidth - 16, topPos + 62, menu::getMachineStates, false));
 

@@ -70,7 +70,7 @@ import java.util.UUID;
 
 ;
 
-public class FarmingStationBlockEntity extends PoweredMachineBlockEntity implements RangedActor, FarmingStation, FluidTankUser, FluidItemInteractive {
+public class FarmingStationBlockEntity extends PoweredMachineBlockEntity implements RangedActor, FarmingStation  {
     public static final String CONSUMED = "Consumed";
     private static final QuadraticScalable ENERGY_CAPACITY = new QuadraticScalable(CapacitorModifier.ENERGY_CAPACITY, MachinesConfig.COMMON.ENERGY.FARM_CAPACITY);
     private static final QuadraticScalable ENERGY_USAGE = new QuadraticScalable(CapacitorModifier.ENERGY_USE, MachinesConfig.COMMON.ENERGY.FARM_USAGE);
@@ -87,18 +87,15 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     public static final MultiSlotAccess BONEMEAL = new MultiSlotAccess();
     public static final MultiSlotAccess OUTPUT = new MultiSlotAccess();
 
-    private static final TankAccess TANK = new TankAccess();
-    private static final int CAPACITY = 1000;
-
     //TODO One fake player for all? Or one for each machine?
     public static final FakePlayer FARM_PLAYER = new FakePlayer(
         ServerLifecycleHooks.getCurrentServer().overworld(), new GameProfile(UUID.fromString("7b2621b4-83fb-11ee-b962-0242ac120002"), "enderio:farm"));
+
     private List<BlockPos> positions;
     private int currentIndex = 0;
     private int consumed = 0;
     @Nullable
     private FarmTask currentTask = null;
-    private final MachineFluidHandler fluidHandler;
     @Nullable
     private AABBTicket ticket;
 
@@ -113,7 +110,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
 
     public FarmingStationBlockEntity(BlockPos worldPosition, BlockState blockState) {
         super(MachineBlockEntities.FARMING_STATION.get(), worldPosition, blockState, true, CapacitorSupport.REQUIRED, EnergyIOMode.Input, ENERGY_CAPACITY, ENERGY_USAGE);
-        fluidHandler = createFluidHandler();
     }
 
     @Override
@@ -255,7 +251,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     public void onLoad() {
         super.onLoad();
         updateLocations();
-        onTankContentsChanged(); //Refresh the ticket
     }
 
     private void updateLocations() {
@@ -388,49 +383,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
         return getEnergyStorage().consumeEnergy(energy, simulate);
     }
 
-    @Override
-    public MachineTankLayout getTankLayout() {
-        return new MachineTankLayout.Builder().tank(TANK, CAPACITY, f -> f.is(FluidTags.WATER)).build();
-    }
-
-    @Override
-    public MachineFluidHandler getFluidHandler() {
-        return fluidHandler;
-    }
-
-    @Override
-    public MachineFluidHandler createFluidHandler() {
-        return new MachineFluidHandler(this, getTankLayout()) {
-            @Override
-            protected void onContentsChanged(int slot) {
-                onTankContentsChanged();
-                setChanged();
-                super.onContentsChanged(slot);
-                updateMachineState(MachineState.EMPTY_TANK, TANK.getFluidAmount(this) <= 0);
-            }
-        };
-    }
-
-    public MachineFluidTank getFluidTank() {
-        return TANK.getTank(this);
-    }
-
-    private void onTankContentsChanged() {
-        if (level.isClientSide) {
-            return;
-        }
-        if (TANK.getTank(this).getFluidAmount() == TANK.getTank(this).getCapacity()) {
-            if (ticket != null) {
-                ticket.invalidate();
-            }
-            this.ticket = FarmlandWaterManager.addAABBTicket(this.level, new AABB(this.worldPosition).inflate(getRange()));
-        } else {
-            if (ticket != null) {
-                ticket.invalidate();
-                ticket = null;
-            }
-        }
-    }
 
     @Override
     public void setRemoved() {
@@ -464,7 +416,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     public void saveAdditional(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         super.saveAdditional(tag, lookupProvider);
         tag.putInt(CONSUMED, consumed);
-        saveTank(lookupProvider, tag);
     }
 
     @Override
@@ -482,7 +433,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     public void loadAdditional(CompoundTag tag, HolderLookup.Provider lookupProvider) {
         super.loadAdditional(tag, lookupProvider);
         consumed = tag.getInt(CONSUMED);
-        loadTank(lookupProvider, tag);
 
         if (tag.contains(MachineNBTKeys.ACTION_RANGE)) {
             actionRange = ActionRange.parse(lookupProvider,
@@ -498,13 +448,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     protected void applyImplicitComponents(DataComponentInput components) {
         super.applyImplicitComponents(components);
 
-        SimpleFluidContent storedFluid = components.get(EIODataComponents.ITEM_FLUID_CONTENT);
-        if (storedFluid != null) {
-            var tank = TANK.getTank(this);
-            tank.setFluid(storedFluid.copy());
-
-        }
-
         var actionRange = components.get(MachineDataComponents.ACTION_RANGE);
         if (actionRange != null) {
             this.actionRange = actionRange;
@@ -516,12 +459,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     @Override
     protected void collectImplicitComponents(DataComponentMap.Builder components) {
         super.collectImplicitComponents(components);
-
-        var tank = TANK.getTank(this);
-        if (!tank.isEmpty()) {
-            components.set(EIODataComponents.ITEM_FLUID_CONTENT, SimpleFluidContent.copyOf(tank.getFluid()));
-
-        }
 
         // Only if unchanged.
         if (!actionRange.equals(DEFAULT_RANGE)) {
