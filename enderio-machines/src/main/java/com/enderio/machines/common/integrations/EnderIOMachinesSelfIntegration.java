@@ -19,11 +19,13 @@ public class EnderIOMachinesSelfIntegration implements Integration {
     public void registerFarmTasks(FarmTaskManager manager) {
         manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_CROP);
         manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_BLOCK);
+        manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_SAPLING);
         manager.addTask(FarmTaskManager.BONEMEAL, MachineFarmingTasks.BONEMEAL);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_CROP);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_FLOWER);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_PITCHER);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_STEM_CROPS);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_BLOCK);
+        manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_TREE);
     }
 }

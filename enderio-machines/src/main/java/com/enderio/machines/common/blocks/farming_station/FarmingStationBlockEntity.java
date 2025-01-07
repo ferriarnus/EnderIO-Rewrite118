@@ -168,7 +168,6 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
         if (canAct()) {
             doFarmTask();
         }
-        updateMachineState(MachineState.IDLE, currentTask == null);
 
         super.serverTick();
     }
@@ -239,7 +238,7 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
         if (!canAct()) {
             return false;
         }
-        //Check tool
+        //TODO Check tool
         return currentTask != null;
     }
 
