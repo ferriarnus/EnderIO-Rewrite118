@@ -280,17 +280,19 @@ public class MachineFarmingTasks {
                 for (BlockPos pos: tree) {
                     BlockState state = farmBlockEntity.getLevel().getBlockState(pos);
                     BlockEntity blockEntity = farmBlockEntity.getLevel().getBlockEntity(pos);
-                    if(state.is(BlockTags.LOGS) && state.requiresCorrectToolForDrops()) {
+                    if(state.is(BlockTags.LOGS)) {
                         if (farmBlockEntity.getAxe().isEmpty()) {
                             return FarmInteraction.BLOCKED;
                         }
-                    }
-                    if (!farmBlockEntity.handleDrops(state, pos, soil, blockEntity, state.requiresCorrectToolForDrops() ? farmBlockEntity.getAxe() : ItemStack.EMPTY)) {
-                        return FarmInteraction.BLOCKED;
-                    }
-                    farmBlockEntity.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                    if (state.requiresCorrectToolForDrops()) {
+
+                        if (!farmBlockEntity.handleDrops(state, pos, soil, blockEntity, farmBlockEntity.getAxe())) {
+                            return FarmInteraction.BLOCKED;
+                        }
+                        farmBlockEntity.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                         farmBlockEntity.getAxe().mineBlock(farmBlockEntity.getLevel(), state, pos, farmBlockEntity.getPlayer());
+                    } else if(state.is(BlockTags.LEAVES)) {
+                        farmBlockEntity.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                        farmBlockEntity.getHoe().mineBlock(farmBlockEntity.getLevel(), state, pos, farmBlockEntity.getPlayer());
                     }
                 }
                 farmBlockEntity.addConsumedPower(-40);

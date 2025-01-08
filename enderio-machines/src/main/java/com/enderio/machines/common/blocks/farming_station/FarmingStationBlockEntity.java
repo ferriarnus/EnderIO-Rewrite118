@@ -354,7 +354,10 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
 
     @Override
     public ItemStack getSeedsForPos(BlockPos pos) {
-        return getSeedForPos(pos).getItemStack(this);
+        var stack = getSeedForPos(pos).getItemStack(this);
+        if (stack.getCount() > 1) // leave one item in the slot
+            return stack;
+        return ItemStack.EMPTY;
     }
 
     @Override
