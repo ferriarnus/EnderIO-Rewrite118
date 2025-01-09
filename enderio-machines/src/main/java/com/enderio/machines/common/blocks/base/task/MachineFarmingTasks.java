@@ -311,8 +311,11 @@ public class MachineFarmingTasks {
                         farmBlockEntity.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
                         farmBlockEntity.getAxe().mineBlock(farmBlockEntity.getLevel(), state, pos, farmBlockEntity.getPlayer());
                     } else if(state.is(BlockTags.LEAVES)) {
+                        if (!farmBlockEntity.handleDrops(state, pos, soil, blockEntity, farmBlockEntity.getShears())) {
+                            return FarmInteraction.BLOCKED;
+                        }
                         farmBlockEntity.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
-                        farmBlockEntity.getHoe().mineBlock(farmBlockEntity.getLevel(), state, pos, farmBlockEntity.getPlayer());
+                        farmBlockEntity.getShears().mineBlock(farmBlockEntity.getLevel(), state, pos, farmBlockEntity.getPlayer());
                     }
                 }
                 farmBlockEntity.addConsumedPower(-40);
