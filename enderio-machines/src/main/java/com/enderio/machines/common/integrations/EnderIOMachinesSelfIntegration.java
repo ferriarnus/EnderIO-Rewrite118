@@ -20,6 +20,7 @@ public class EnderIOMachinesSelfIntegration implements Integration {
         manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_CROP);
         manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_BLOCK);
         manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_SAPLING);
+        manager.addTask(FarmTaskManager.PLANT, MachineFarmingTasks.PLANT_NETHER_WART);
         manager.addTask(FarmTaskManager.BONEMEAL, MachineFarmingTasks.BONEMEAL);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_CROP);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_FLOWER);
@@ -27,5 +28,6 @@ public class EnderIOMachinesSelfIntegration implements Integration {
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_STEM_CROPS);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_BLOCK);
         manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_TREE);
+        manager.addTask(FarmTaskManager.HARVEST, MachineFarmingTasks.HARVEST_NETHER_WART);
     }
 }

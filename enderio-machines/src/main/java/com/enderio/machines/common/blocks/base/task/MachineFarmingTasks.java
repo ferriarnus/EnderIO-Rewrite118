@@ -17,6 +17,7 @@ import net.minecraft.world.level.block.BonemealableBlock;
 import net.minecraft.world.level.block.CactusBlock;
 import net.minecraft.world.level.block.CropBlock;
 import net.minecraft.world.level.block.FlowerBlock;
+import net.minecraft.world.level.block.NetherWartBlock;
 import net.minecraft.world.level.block.PitcherCropBlock;
 import net.minecraft.world.level.block.SaplingBlock;
 import net.minecraft.world.level.block.StemBlock;
@@ -98,6 +99,25 @@ public class MachineFarmingTasks {
             return FarmInteraction.BLOCKED;
         }
         if (seeds.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof SaplingBlock) {
+            InteractionResult result = farmBlockEntity.useStack(soil, seeds);
+            if (result == InteractionResult.SUCCESS || result == InteractionResult.CONSUME) {
+                if (farmBlockEntity.getConsumedPower() >= 40) {
+                    farmBlockEntity.addConsumedPower(-40);
+                    return FarmInteraction.FINISHED;
+                }
+                farmBlockEntity.addConsumedPower(farmBlockEntity.consumeEnergy(40 - farmBlockEntity.getConsumedPower(), false));
+                return FarmInteraction.POWERED;
+            }
+        }
+        return FarmInteraction.IGNORED;
+    };
+
+    public static FarmTask PLANT_NETHER_WART = (soil, farmBlockEntity) -> {
+        ItemStack seeds = farmBlockEntity.getSeedsForPos(soil);
+        if (seeds.isEmpty() || farmBlockEntity.getLevel().getBlockState(soil).isAir()) {
+            return FarmInteraction.BLOCKED;
+        }
+        if (seeds.getItem() instanceof BlockItem blockItem && blockItem.getBlock() instanceof NetherWartBlock) {
             InteractionResult result = farmBlockEntity.useStack(soil, seeds);
             if (result == InteractionResult.SUCCESS || result == InteractionResult.CONSUME) {
                 if (farmBlockEntity.getConsumedPower() >= 40) {
@@ -300,6 +320,27 @@ public class MachineFarmingTasks {
             }
             farmBlockEntity.addConsumedPower(farmBlockEntity.consumeEnergy(40 - farmBlockEntity.getConsumedPower(), false));
             return FarmInteraction.POWERED;
+        }
+        return FarmInteraction.IGNORED;
+    };
+
+    public static FarmTask HARVEST_NETHER_WART = (soil, farmBlockEntity) -> {
+        BlockPos pos = soil.above();
+        BlockState plant = farmBlockEntity.getLevel().getBlockState(pos);
+        BlockEntity blockEntity = farmBlockEntity.getLevel().getBlockEntity(pos);
+        if (plant.getBlock() instanceof NetherWartBlock wart) {
+            if (plant.getValue(NetherWartBlock.AGE) >= 3) {
+                if (farmBlockEntity.getConsumedPower() >= 40) {
+                    if (farmBlockEntity.handleDrops(plant, pos, soil, blockEntity, ItemStack.EMPTY)) {
+                        farmBlockEntity.getLevel().setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+                        farmBlockEntity.addConsumedPower(-40);
+                        return FarmInteraction.FINISHED;
+                    }
+                    return FarmInteraction.BLOCKED;
+                }
+                farmBlockEntity.addConsumedPower(farmBlockEntity.consumeEnergy(40 - farmBlockEntity.getConsumedPower(), false));
+                return FarmInteraction.POWERED;
+            }
         }
         return FarmInteraction.IGNORED;
     };
