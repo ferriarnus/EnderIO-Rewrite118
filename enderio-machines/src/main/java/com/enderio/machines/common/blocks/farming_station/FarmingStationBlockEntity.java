@@ -165,7 +165,7 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
             op.ifPresent(data -> soulData = data);
             reloadCache = reload;
         }
-        if (canAct()) {
+        if (canAct(5)) {
             doFarmTask();
         }
 

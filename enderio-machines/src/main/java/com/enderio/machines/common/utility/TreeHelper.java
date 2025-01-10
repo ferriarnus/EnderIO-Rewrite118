@@ -1,7 +1,6 @@
 package com.enderio.machines.common.utility;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
@@ -9,7 +8,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class TreeHelper {
 
@@ -24,23 +22,18 @@ public class TreeHelper {
 
         searchSpace.add(bottom);
 
-        Consumer<BlockPos> addIfNotSearched = (blockPos) -> {
-            if(!searched.contains(blockPos))
-                searchSpace.add(blockPos);
-        };
-
         while(!searchSpace.isEmpty()) {
             BlockPos pos = searchSpace.removeFirst();
             searched.add(pos);
             BlockState state = level.getBlockState(pos);
             if(isTree(state)) {
                 tree.add(pos);
-                addIfNotSearched.accept(pos.relative(Direction.UP));
-                addIfNotSearched.accept(pos.relative(Direction.NORTH));
-                addIfNotSearched.accept(pos.relative(Direction.EAST));
-                addIfNotSearched.accept(pos.relative(Direction.WEST));
-                addIfNotSearched.accept(pos.relative(Direction.SOUTH));
-                addIfNotSearched.accept(pos.relative(Direction.DOWN));
+                BlockPos.betweenClosed(pos.offset(1, 1, 1), pos.offset(-1, -1, -1))
+                    .forEach(next -> {
+                        if(searched.contains(next)) return;
+                        searched.add(next);
+                        searchSpace.add(next);
+                    });
             }
         }
         return tree;
