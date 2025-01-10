@@ -1,8 +1,5 @@
 {
   "values": {
-    "minecraft:amethyst_shard": {
-      "#enderio:amethyst": 0.25
-    },
     "minecraft:blue_ice": {
       "#enderio:cloud_cold": 81.0
     },

@@ -9,6 +9,6 @@
     "amount": 1000,
     "id": "enderio:fluid_liquid_darkness_still"
   },
-  "right_reagent": "enderio:grains",
+  "right_reagent": "c:dusts/obsidian",
   "ticks": 600
 }

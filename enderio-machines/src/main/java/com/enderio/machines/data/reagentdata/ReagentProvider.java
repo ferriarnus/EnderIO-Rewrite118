@@ -44,8 +44,6 @@ public class ReagentProvider extends DataMapProvider {
         reagent(Items.PACKED_ICE, MachineTags.ItemTags.CLOUD_COLD, 9D);
         reagent(Items.BLUE_ICE, MachineTags.ItemTags.CLOUD_COLD, 81D);
 
-        reagent(Items.AMETHYST_SHARD, MachineTags.ItemTags.AMETHYST, 0.25D);
-
         var builder = builder(VatReagent.DATA_MAP);
         dataMap.forEach((item, map) -> {
             builder.add(item.builtInRegistryHolder(), map, false);

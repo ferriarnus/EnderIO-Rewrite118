@@ -22,7 +22,6 @@ public class MachineTags {
         public static final TagKey<Item> NATURAL_LIGHTS = create("natural_lights");
         public static final TagKey<Item> SUNFLOWER = create("sunflower");
         public static final TagKey<Item> AMETHYST = create("amethyst");
-        public static final TagKey<Item> GRAINS = create("grains");
         public static final TagKey<Item> CLOUD_COLD = create("cloud_cold");
         public static final TagKey<Item> PRISMARINE = create("prismarine");
         public static final TagKey<Item> LIGHTNING_ROD = create("lightning_rod");
@@ -31,7 +30,6 @@ public class MachineTags {
         private static TagKey<Item> create(String pName) {
             return TagKey.create(Registries.ITEM, EnderIO.loc(pName));
         }
-
     }
 
     public static class EntityTypes {
