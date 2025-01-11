@@ -8,6 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
+import java.util.function.Predicate;
 
 public class TreeHelper {
 
@@ -15,24 +16,23 @@ public class TreeHelper {
         return blockState.is(BlockTags.LOGS) || blockState.is(BlockTags.LEAVES);
     }
 
-    public static Set<BlockPos> getTree(Level level, BlockPos bottom) {
-        LinkedList<BlockPos> searchSpace = new LinkedList<>();
+    public static Set<BlockPos> getTree(Level level, BlockPos bottom, Predicate<BlockPos> inRange) {
+        LinkedList<BlockPos> candidates = new LinkedList<>();
         HashSet<BlockPos> tree = new HashSet<>();
-        HashSet<BlockPos> searched = new HashSet<>();
+        HashSet<BlockPos> seen = new HashSet<>();
 
-        searchSpace.add(bottom);
+        candidates.add(bottom);
 
-        while(!searchSpace.isEmpty()) {
-            BlockPos pos = searchSpace.removeFirst();
-            searched.add(pos);
+        while(!candidates.isEmpty()) {
+            BlockPos pos = candidates.removeFirst();
             BlockState state = level.getBlockState(pos);
-            if(isTree(state)) {
+            seen.add(pos);
+            if(isTree(state) && inRange.test(pos)) {
                 tree.add(pos);
                 BlockPos.betweenClosed(pos.offset(1, 1, 1), pos.offset(-1, -1, -1))
                     .forEach(next -> {
-                        if(searched.contains(next)) return;
-                        searched.add(next);
-                        searchSpace.add(next);
+                        if(seen.contains(next)) return;
+                        candidates.add(next);
                     });
             }
         }

@@ -381,6 +381,16 @@ public class FarmingStationBlockEntity extends PoweredMachineBlockEntity impleme
     }
 
     @Override
+    public BlockPos getPosition() {
+        return getBlockPos();
+    }
+
+    @Override
+    public int getFarmingRange() {
+        return getRange();
+    }
+
+    @Override
     public int consumeEnergy(int energy, boolean simulate) {
         return getEnergyStorage().consumeEnergy(energy, simulate);
     }

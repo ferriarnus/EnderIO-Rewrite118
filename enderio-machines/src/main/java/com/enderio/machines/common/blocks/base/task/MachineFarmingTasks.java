@@ -24,6 +24,9 @@ import net.minecraft.world.level.block.StemBlock;
 import net.minecraft.world.level.block.SugarCaneBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
+import org.joml.Vector2i;
 
 import java.util.Optional;
 import java.util.Set;
@@ -294,8 +297,9 @@ public class MachineFarmingTasks {
     public static FarmTask HARVEST_TREE = (soil, farmBlockEntity) -> {
         BlockPos bottom = soil.above();
         BlockState bottomState = farmBlockEntity.getLevel().getBlockState(bottom);
+        AABB range = new AABB(farmBlockEntity.getPosition()).inflate(farmBlockEntity.getFarmingRange());
         if(bottomState.is(BlockTags.LOGS)) {
-            Set<BlockPos> tree = TreeHelper.getTree(farmBlockEntity.getLevel(), bottom);
+            Set<BlockPos> tree = TreeHelper.getTree(farmBlockEntity.getLevel(), bottom, pos -> range.contains(pos.getX(), pos.getY(), pos.getZ()));
             if (farmBlockEntity.getConsumedPower() >= 40) {
                 for (BlockPos pos: tree) {
                     BlockState state = farmBlockEntity.getLevel().getBlockState(pos);

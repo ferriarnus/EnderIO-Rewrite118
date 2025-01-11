@@ -34,6 +34,10 @@ public interface FarmingStation {
 
     FakePlayer getPlayer();
 
+    BlockPos getPosition();
+
+    int getFarmingRange();
+
     boolean consumeBonemeal();
 
     Level getLevel();
